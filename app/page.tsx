@@ -9,9 +9,9 @@ export default function Home() {
       <h2 className={`${roboto.className} text-5xl font-bold`}>DELIVERS</h2>
       <p className="text-lg ">
         Bienvenue sur Delivers, le comparateur de prix de livraison en ligne au
-        Congo+ !
+        Congo !
       </p>
-      <Link href={"/profile"} className="w-fit">
+      <Link href={"/espace"} className="w-fit">
         <Button>
           <span>Commencer maintenant</span>
           <ChevronRight />
