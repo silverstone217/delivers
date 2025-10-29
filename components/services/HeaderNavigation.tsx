@@ -17,6 +17,7 @@ import UserAvatar from "../UserAvatar";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { EspacesLinks } from "@/utils/links";
+import { SITE_NAME } from "@/lib/env";
 
 type Props = {
   company: DeliveryCompany;
@@ -33,8 +34,8 @@ const HeaderNavigation = ({ company }: Props) => {
       justify-between backdrop-blur-lg
        p-4"
       >
-        <h2 className="max-w-56 line-clamp-1 font-semibold">
-          Espace {capitaliseFirstLetter(company.name ?? "Companie")}
+        <h2 className="max-w-56 line-clamp-1 font-bold text-lg">
+          {capitaliseFirstLetter(SITE_NAME)}
         </h2>
 
         <SheetNav company={company} />
@@ -45,7 +46,7 @@ const HeaderNavigation = ({ company }: Props) => {
 
 export default HeaderNavigation;
 
-const SheetNav = ({ company }: Props) => {
+const SheetNav = ({}: Props) => {
   const user = useCurrentUser();
 
   if (!user) return null;

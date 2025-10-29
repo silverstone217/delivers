@@ -3,7 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { getUser } from "../authAction";
 import z from "zod";
-import { AddCompanySchema, UpdateLogoCompanySchema } from "@/schema/companies";
+import {
+  AddCompanySchema,
+  UpdateCompanySchema,
+  UpdateLogoCompanySchema,
+} from "@/schema/companies";
 import { NO_IMAGE_URL } from "@/lib/env";
 import { PERMIT_ROLES } from "@/utils/service";
 
@@ -150,6 +154,66 @@ export const updateLogo = async (data: UpdateLogoType) => {
     };
   } catch (error) {
     console.error("[updateLogo]", error);
+    return {
+      error: true,
+      message: "Oops ! Une erreur est survenue, veuillez réessayer.",
+    };
+  }
+};
+
+// --------------------
+// UPDATE  COMPANY
+// --------------------
+export type UpdateServiceType = z.infer<typeof UpdateCompanySchema>;
+export const updateService = async (data: UpdateServiceType) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié, veuillez vous connecter pour continuer.",
+      };
+    }
+
+    const isCompanyExist = await prisma.deliveryCompany.findFirst({
+      where: { id: data.id, ownerId: user.id },
+    });
+
+    if (!isCompanyExist) {
+      return {
+        error: true,
+        message: "Ce service n'est plus disponible",
+      };
+    }
+
+    // ✅ Validation stricte avec zod
+    const result = UpdateCompanySchema.safeParse(data);
+    if (!result.success) {
+      const errMsg = result.error.issues.map((e) => e.message).join(", ");
+      return {
+        error: true,
+        message:
+          errMsg || "Erreur de validation des données. Vérifiez vos champs.",
+        companyId: null,
+      };
+    }
+
+    const { name, description } = result.data;
+
+    await prisma.deliveryCompany.update({
+      where: { id: isCompanyExist.id },
+      data: {
+        name,
+        description: description ? description : undefined,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Modifié avec success",
+    };
+  } catch (error) {
+    console.log(error);
     return {
       error: true,
       message: "Oops ! Une erreur est survenue, veuillez réessayer.",

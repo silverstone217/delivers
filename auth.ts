@@ -9,6 +9,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   pages: {
     verifyRequest: "/verif-email-sent",
+    signIn: "/",
   },
   secret: AUTH_SECRET!,
   trustHost: true,

@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NO_IMAGE_URL: process.env.NO_IMAGE_URL,
+    SITE_NAME: process.env.SITE_NAME,
   },
 
   // IMAGES
@@ -30,7 +31,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "3eqaz12yan4rgf7v.public.blob.vercel-storage.com",
+        hostname: "0wqluze0nxvr2qyp.public.blob.vercel-storage.com",
         port: "",
         pathname: "/**",
       },
@@ -42,7 +43,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "3eqaz12yan4rgf7v.public.blob.vercel-storage.com",
+        hostname: "**.public.blob.vercel-storage.com",
         port: "",
         pathname: "/**",
       },

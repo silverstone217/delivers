@@ -8,6 +8,7 @@ import UserAvatar from "../UserAvatar";
 import LogoutBtn from "../auth/LogoutBtn";
 import { DeliveryCompany } from "@prisma/client";
 import { capitaliseFirstLetter } from "@/utils/function";
+import { SITE_NAME } from "@/lib/env";
 
 type Props = {
   company: DeliveryCompany;
@@ -33,9 +34,10 @@ const AsideBarNavigation = ({ company }: Props) => {
       "
       >
         {/* ESPACE COMPANY */}
-        <div className="text-md font-semibold flex gap-x-0.5 flex-wrap px-6 mb-4">
-          <span>Espace</span>
-          <span>{capitaliseFirstLetter(company.name)}</span>
+        <div className="text-md font-bold px-6 mb-4">
+          {capitaliseFirstLetter(SITE_NAME)}
+          {/* <span>Espace</span>
+          <span>{capitaliseFirstLetter(company.name)}</span> */}
         </div>
 
         {/* separator */}

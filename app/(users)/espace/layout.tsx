@@ -26,6 +26,10 @@ async function EspaceLayout({ children }: EspaceLayoutProps) {
 
   const company = companies[0];
 
+  if (company.ownerId !== user.id) {
+    return <div>Non authorise!</div>;
+  }
+
   return (
     <div className="relative w-full">
       {/* HEADER SMALL SCREEN */}
@@ -34,7 +38,7 @@ async function EspaceLayout({ children }: EspaceLayoutProps) {
       {/* ASIDE BIG SCREEN */}
       <AsideBarNavigation company={company} />
       <main
-        className=" md:pl-[210px]
+        className=" md:pl-[214px]
       p-4 md:pt-4 pt-16
       "
       >
