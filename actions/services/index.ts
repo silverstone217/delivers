@@ -2,8 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUser } from "../authAction";
+import z from "zod";
+import { AddCompanySchema, UpdateLogoCompanySchema } from "@/schema/companies";
+import { NO_IMAGE_URL } from "@/lib/env";
+import { PERMIT_ROLES } from "@/utils/service";
 
-// GET DeliveryCompany
+// --------------------
+// GET Delivery Company
+// --------------------
 export const getDeliveryCompany = async () => {
   const user = await getUser();
 
@@ -18,4 +24,135 @@ export const getDeliveryCompany = async () => {
   return companies ?? [];
 };
 
-// ADD new service
+// --------------------
+// TYPES
+// --------------------
+export type NewServiceType = z.infer<typeof AddCompanySchema>;
+export type UpdateLogoType = z.infer<typeof UpdateLogoCompanySchema>;
+
+// --------------------
+// ADD NEW SERVICE
+// --------------------
+export const addNewService = async (data: NewServiceType) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié, veuillez vous connecter pour continuer.",
+        companyId: null,
+      };
+    }
+
+    // check roles &&
+    // and can user create many service ?
+    const hasAlreadyCreated = await prisma.deliveryCompany.findMany({
+      where: { ownerId: user.id },
+    });
+
+    if (hasAlreadyCreated.length > 0 && !PERMIT_ROLES.includes(user.role)) {
+      return {
+        error: true,
+        message: "Acces refuse, vous posseder deja un service.",
+        companyId: null,
+      };
+    }
+
+    // ✅ Validation stricte avec zod
+    const result = AddCompanySchema.safeParse(data);
+    if (!result.success) {
+      const errMsg = result.error.issues.map((e) => e.message).join(", ");
+      return {
+        error: true,
+        message:
+          errMsg || "Erreur de validation des données. Vérifiez vos champs.",
+        companyId: null,
+      };
+    }
+
+    const { name, description } = result.data;
+    const logo = NO_IMAGE_URL;
+
+    // ✅ Création dans Prisma
+    const newService = await prisma.deliveryCompany.create({
+      data: {
+        name,
+        description: description ?? undefined,
+        ownerId: user.id,
+        logo,
+      },
+      select: { id: true },
+    });
+
+    return {
+      error: false,
+      message: "Compagnie créée avec succès ✅",
+      companyId: newService.id,
+    };
+  } catch (error) {
+    console.error("[addNewService]", error);
+    return {
+      error: true,
+      message: "Oops ! Une erreur est survenue, veuillez réessayer.",
+      companyId: null,
+    };
+  }
+};
+
+// --------------------
+// UPDATE LOGO COMPANY
+// --------------------
+export const updateLogo = async (data: UpdateLogoType) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié, veuillez vous connecter pour continuer.",
+      };
+    }
+
+    // ✅ Validation stricte
+    const result = UpdateLogoCompanySchema.safeParse(data);
+    if (!result.success) {
+      const errMsg = result.error.issues.map((e) => e.message).join(", ");
+      return {
+        error: true,
+        message:
+          errMsg || "Erreur de validation des données. Vérifiez vos champs.",
+      };
+    }
+
+    const { id, logo } = result.data;
+
+    // ✅ Vérifie que la compagnie appartient bien à l'utilisateur
+    const company = await prisma.deliveryCompany.findFirst({
+      where: { id, ownerId: user.id },
+      select: { id: true },
+    });
+
+    if (!company) {
+      return {
+        error: true,
+        message: "Ce service ne vous appartient pas ou a été supprimé.",
+      };
+    }
+
+    // ✅ Mise à jour du logo
+    await prisma.deliveryCompany.update({
+      where: { id: company.id },
+      data: { logo },
+    });
+
+    return {
+      error: false,
+      message: "Logo mis à jour avec succès 🎉",
+    };
+  } catch (error) {
+    console.error("[updateLogo]", error);
+    return {
+      error: true,
+      message: "Oops ! Une erreur est survenue, veuillez réessayer.",
+    };
+  }
+};

@@ -19,6 +19,13 @@ import { roboto } from "@/lib/fonts";
 import { Upload, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { isEmptyString } from "@/utils/function";
+import {
+  addNewService,
+  NewServiceType,
+  updateLogo,
+  UpdateLogoType,
+} from "@/actions/services";
+import { uploadLogo } from "@/actions/services/logo";
 
 const NoServiceFound = () => {
   const [name, setName] = useState("");
@@ -43,14 +50,55 @@ const NoServiceFound = () => {
     }
 
     setLoading(true);
+
     try {
-      // 🔧 future API call
-      await new Promise((r) => setTimeout(r, 1200));
-      toast.success("Service créé avec succès 🎉");
+      // 🔧 Validation et création du service
+      const formData: NewServiceType = {
+        name,
+        description,
+      };
+
+      const result = await addNewService(formData);
+
+      if (result.error || !result.companyId) {
+        throw new Error(result.message || "Impossible de créer le service");
+      }
+
+      let finalMessage = "Service créé avec succès 🎉";
+
+      // 🖼️ Upload du logo si présent
+      if (logo) {
+        const uploadUrl = await uploadLogo(logo);
+
+        if (!uploadUrl) {
+          throw new Error(
+            "Impossible de charger l'image. Veuillez réessayer plus tard."
+          );
+        }
+
+        const updateData: UpdateLogoType = {
+          id: result.companyId,
+          logo: uploadUrl,
+        };
+
+        const updateResult = await updateLogo(updateData);
+
+        if (updateResult.error) {
+          throw new Error(updateResult.message);
+        }
+
+        finalMessage = "Compagnie ajoutée avec succès 🎉";
+      }
+
+      toast.success(finalMessage);
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Une erreur est survenue !");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue, veuillez réessayer."
+      );
     } finally {
       setLoading(false);
     }
