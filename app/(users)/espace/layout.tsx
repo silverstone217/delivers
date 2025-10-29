@@ -1,5 +1,7 @@
 import { getUser } from "@/actions/authAction";
 import { getDeliveryCompany } from "@/actions/services";
+import AsideBarNavigation from "@/components/services/AsideBarNavigation";
+import HeaderNavigation from "@/components/services/HeaderNavigation";
 import NoServiceFound from "@/components/services/NoServiceFound";
 import React, { ReactNode } from "react";
 
@@ -25,8 +27,19 @@ async function EspaceLayout({ children }: EspaceLayoutProps) {
   const company = companies[0];
 
   return (
-    <div>
-      <main>{children}</main>
+    <div className="relative w-full">
+      {/* HEADER SMALL SCREEN */}
+      <HeaderNavigation company={company} />
+
+      {/* ASIDE BIG SCREEN */}
+      <AsideBarNavigation company={company} />
+      <main
+        className=" md:pl-[210px]
+      p-4 md:pt-4 pt-16
+      "
+      >
+        {children}
+      </main>
     </div>
   );
 }
