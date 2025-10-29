@@ -1,7 +1,12 @@
-import { Kanban, Contact, MapPinHouse } from "lucide-react";
+import { Kanban, Contact, MapPinHouse, House } from "lucide-react";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
 
 export const EspacesLinks = [
+  {
+    label: "Accueil",
+    link: "/",
+    icon: House,
+  },
   {
     label: "Espace",
     link: "/espace",
