@@ -34,7 +34,7 @@ const HeaderNavigation = ({ company }: Props) => {
       justify-between backdrop-blur-lg
        p-4"
       >
-        <h2 className="max-w-56 line-clamp-1 font-bold text-lg">
+        <h2 className="max-w-56 line-clamp-1 font-bold text-lg text-black">
           {capitaliseFirstLetter(SITE_NAME)}
         </h2>
 
