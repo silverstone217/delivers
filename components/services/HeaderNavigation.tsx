@@ -3,6 +3,7 @@ import { DeliveryCompany } from "@prisma/client";
 import React from "react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -74,18 +75,19 @@ const SheetNav = ({ company }: Props) => {
         >
           {EspacesLinks.map((link, idx) => {
             return (
-              <Link
-                key={idx}
-                href={link.link}
-                className="w-full flex items-center gap-4
+              <SheetClose key={idx} asChild>
+                <Link
+                  href={link.link}
+                  className="w-full flex items-center gap-4
                    px-4 py-2 hover:bg-secondary text-sm 
                    font-medium
                    transition-all duration-300 ease-in-out
                 "
-              >
-                <link.icon className="shrink-0" size={25} />
-                <span>{link.label}</span>
-              </Link>
+                >
+                  <link.icon className="shrink-0" size={25} />
+                  <span>{link.label}</span>
+                </Link>
+              </SheetClose>
             );
           })}
         </nav>
