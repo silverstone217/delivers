@@ -223,7 +223,7 @@ const MainComponent = ({ company }: Props) => {
               id="name"
               type="text"
               placeholder="Ex: Kin Express"
-              value={name}
+              defaultValue={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={60}
               disabled={loading}
@@ -236,7 +236,7 @@ const MainComponent = ({ company }: Props) => {
             <Textarea
               id="description"
               placeholder="Ex: Rapide, fiable et professionnel..."
-              value={description}
+              defaultValue={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={1500}
               disabled={loading}
