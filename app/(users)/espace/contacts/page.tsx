@@ -1,8 +1,7 @@
 import { getUser } from "@/actions/authAction";
 import { getDeliveryCompany } from "@/actions/services";
 import { getContactCompanyId } from "@/actions/services/contact";
-import EmptyContactsCard from "@/components/services/contacts/EmptyContactsCard";
-import MainComponent from "@/components/services/espace/MainComponent";
+import EditContactsForm from "@/components/services/contacts/EditContactsForm";
 import React from "react";
 
 async function page() {
@@ -30,10 +29,8 @@ async function page() {
 
   return (
     <div>
-      {/* No contacts */}
-      {!contacts && <EmptyContactsCard defaultActive={!contacts} />}
-
-      <MainComponent company={company} />
+      {/* CONTACTS */}
+      <EditContactsForm companyId={company.id} contacts={contacts} />
     </div>
   );
 }
