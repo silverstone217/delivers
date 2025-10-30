@@ -67,13 +67,17 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// ----------------------------
+//  Delivery Company
+// ----------------------------
 model DeliveryCompany {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
   logo        String?
+  contact     Contact?
 
-  contact Contact?
+  zones Zone[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,6 +86,90 @@ model DeliveryCompany {
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 }
 
+// ----------------------------
+// 🗺️ ZONES GEOGRAPHIQUES
+// ----------------------------
+model Commune {
+  id        String     @id @default(cuid())
+  name      String
+  quartiers Quartier[]
+
+  zoneId String
+  zone   Zone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quartier {
+  id   String @id @default(cuid())
+  name String
+
+  communeId String
+  commune   Commune @relation(fields: [communeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Zone {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  communes Commune[]
+
+  sender   Tarif[] @relation("sender")
+  receiver Tarif[] @relation("receiver")
+
+  companyId String
+  company   DeliveryCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, name])
+}
+
+// ----------------------------
+//  TARIFS OR RELATIONZ BETWEEN ZONES
+// ----------------------------
+model Tarif {
+  id   String @id @default(cuid())
+  name String
+
+  price    Float
+  interval Interval?
+
+  senderId     String
+  receiverId   String
+  senderZone   Zone   @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverZone Zone   @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Interval {
+  id String @id @default(cuid())
+
+  minLength Float?
+  maxLength Float?
+  minWidth  Float?
+  maxWidth  Float?
+  minWeight Float?
+  maxWeight Float?
+
+  price Float
+
+  tarifId String @unique
+  tarif   Tarif  @relation(fields: [tarifId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ----------------------------
+//  CONTACTS
+// ----------------------------
 model Contact {
   id       String  @id @default(cuid())
   email    String
