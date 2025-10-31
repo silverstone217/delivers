@@ -175,17 +175,6 @@ export const updateService = async (data: UpdateServiceType) => {
       };
     }
 
-    const isCompanyExist = await prisma.deliveryCompany.findFirst({
-      where: { id: data.id, ownerId: user.id },
-    });
-
-    if (!isCompanyExist) {
-      return {
-        error: true,
-        message: "Ce service n'est plus disponible",
-      };
-    }
-
     // ✅ Validation stricte avec zod
     const result = UpdateCompanySchema.safeParse(data);
     if (!result.success) {
@@ -198,7 +187,18 @@ export const updateService = async (data: UpdateServiceType) => {
       };
     }
 
-    const { name, description } = result.data;
+    const { name, description, id } = result.data;
+
+    const isCompanyExist = await prisma.deliveryCompany.findFirst({
+      where: { id, ownerId: user.id },
+    });
+
+    if (!isCompanyExist) {
+      return {
+        error: true,
+        message: "Ce service n'est plus disponible",
+      };
+    }
 
     await prisma.deliveryCompany.update({
       where: { id: isCompanyExist.id },

@@ -138,6 +138,7 @@ model Tarif {
 
   price    Float
   interval Interval?
+  express  Boolean   @default(false)
 
   senderId     String
   receiverId   String

@@ -22,9 +22,13 @@ export const communesKinshasa = [
   "Nsele",
   "Selembao",
   "Ndjili",
-];
+].sort((a, b) => {
+  if (a > b) return 1;
+  if (b === a) return 0;
+  return -1;
+});
 
-export const quartiersParCommune: Record<string, string[]> = {
+export const quartiersParCommune = {
   Kintambo: [
     "Itimbiri",
     "Lisala",
@@ -361,4 +365,53 @@ export const quartiersParCommune: Record<string, string[]> = {
     "Madimba",
     "Boyoma",
   ],
+  Maluku: [
+    "Bita",
+    "Ch. Major Leka",
+    "Dumi",
+    "Dumi_363",
+    "Feshi",
+    "Impuru",
+    "Iye",
+    "Kimbambula",
+    "Kimpoko",
+    "Kingakati",
+    "Kingawa",
+    "Kinzono",
+    "Libaya",
+    "Maess",
+    "Mampu",
+    "Mbankana",
+    "Menkao",
+    "Menkao IV",
+    "Mongata",
+    "Mutiene",
+    "Ndakopembe",
+    "Nsuni II",
+    "Pema",
+  ],
 };
+
+export type QuartiersParCommuneMap = typeof quartiersParCommune;
+export const quartiersParCommuneSorted: QuartiersParCommuneMap = (
+  Object.keys(quartiersParCommune) as Array<keyof QuartiersParCommuneMap>
+)
+  .sort((a, b) => a.localeCompare(b)) // tri alphabétique
+  .reduce((acc, key) => {
+    acc[key] = quartiersParCommune[key];
+    return acc;
+  }, {} as QuartiersParCommuneMap);
+
+// === TRANSFORMATION ===
+
+export type CommuneQuartierSelection = {
+  name: string;
+  quartiers: string[];
+};
+
+export const communesQuartiers: CommuneQuartierSelection[] = Object.entries(
+  quartiersParCommuneSorted
+).map(([commune, quartiers]) => ({
+  name: commune,
+  quartiers,
+}));
