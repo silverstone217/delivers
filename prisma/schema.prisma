@@ -114,7 +114,7 @@ model Quartier {
 
 model Zone {
   id       String    @id @default(cuid())
-  name     String    @unique
+  name     String
   communes Commune[]
 
   sender   Tarif[] @relation("sender")

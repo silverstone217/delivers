@@ -31,8 +31,12 @@ export default function EditZoneDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="flex items-center gap-1">
+      <DialogTrigger asChild className="grow ">
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex items-center gap-1 grow w-full"
+        >
           <Edit className="w-4 h-4" /> Modifier
         </Button>
       </DialogTrigger>
