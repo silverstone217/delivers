@@ -50,7 +50,8 @@ const AddForm = ({ companyId }: AddZoneProps) => {
       const result = await createZone(formData);
 
       if (result.error) {
-        throw new Error(result.message);
+        toast.error(result.message);
+        return;
       }
 
       toast.success(result.message);

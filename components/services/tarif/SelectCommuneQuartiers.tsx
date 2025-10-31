@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, ChevronDown, ChevronUp, Trash2, MapPin } from "lucide-react";
+import { X, ChevronDown, ChevronUp, MapPin, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
-type CommuneData = {
+export type CommuneData = {
   name: string;
   quartiers: string[];
 };
@@ -22,18 +22,26 @@ export type CommuneQuartierSelection = {
 
 type Props = {
   data: CommuneData[];
+  initialSelection?: CommuneQuartierSelection[];
   onChange: (value: CommuneQuartierSelection[]) => void;
 };
 
-export default function SelectCommuneQuartiers({ data, onChange }: Props) {
+export default function SelectCommuneQuartiers({
+  data,
+  initialSelection = [],
+  onChange,
+}: Props) {
   const [selected, setSelected] = useState<CommuneQuartierSelection[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
-  // ✅ Synchroniser l’état local vers le parent seulement après MAJ
+  // Sync initial selection
   useEffect(() => {
-    onChange(selected);
-  }, [selected, onChange]);
+    if (initialSelection && initialSelection.length > 0) {
+      setSelected(initialSelection);
+      onChange(initialSelection);
+    }
+  }, [initialSelection, onChange]);
 
   const filteredCommunes = data.filter((commune) =>
     commune.name.toLowerCase().includes(search.toLowerCase())
@@ -46,9 +54,8 @@ export default function SelectCommuneQuartiers({ data, onChange }: Props) {
   const toggleQuartier = (commune: string, quartier: string) => {
     setSelected((prev) => {
       const existing = prev.find((c) => c.commune === commune);
-      if (!existing) {
-        return [...prev, { commune, quartiers: [quartier] }];
-      }
+
+      if (!existing) return [...prev, { commune, quartiers: [quartier] }];
 
       const isAlready = existing.quartiers.includes(quartier);
       const updatedQuartiers = isAlready
@@ -61,24 +68,32 @@ export default function SelectCommuneQuartiers({ data, onChange }: Props) {
     });
   };
 
+  // 🔹 Synchroniser l'état local avec le parent
+  React.useEffect(() => {
+    onChange(selected);
+  }, [onChange, selected]);
+
   const removeCommune = (commune: string) => {
     setSelected((prev) => prev.filter((c) => c.commune !== commune));
   };
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <Label htmlFor="communes">Commune et quartiers</Label>
+      <Label htmlFor="communes">Communes et quartiers</Label>
 
-      {/* Recherche */}
+      {/* SEARCH */}
       <Input
         placeholder="Rechercher une commune..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        autoCapitalize="off"
+        autoCorrect="off"
+        autoComplete="off"
         id="communes"
         name="communes"
       />
 
-      {/* Liste des communes */}
+      {/* LISTE DES COMMUNES */}
       <ScrollArea className="max-h-[300px] border rounded-md p-2 overflow-y-auto">
         {filteredCommunes.map((commune) => {
           const isExpanded = expanded === commune.name;
@@ -125,7 +140,7 @@ export default function SelectCommuneQuartiers({ data, onChange }: Props) {
         })}
       </ScrollArea>
 
-      {/* Liste des choix */}
+      {/* LISTE DES CHOIX */}
       {selected.length > 0 && (
         <Card className="mt-4 border border-muted/40 shadow-sm">
           <CardContent className="p-4 space-y-3">
@@ -155,6 +170,7 @@ export default function SelectCommuneQuartiers({ data, onChange }: Props) {
                       >
                         {q}
                         <button
+                          type="button"
                           onClick={() => toggleQuartier(c.commune, q)}
                           className="hover:text-destructive transition"
                         >
