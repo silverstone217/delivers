@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -278,7 +278,19 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end pt-2 gap-4">
+            {/* RETOUR */}
+            <Button
+              type="button"
+              disabled={loading}
+              variant={"outline"}
+              className="min-w-40"
+              onClick={() => router.back()}
+            >
+              Retour
+            </Button>
+
+            {/* SAVE */}
             <Button type="submit" disabled={isDisabled} className="min-w-40">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Enregistrer

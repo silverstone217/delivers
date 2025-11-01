@@ -2,9 +2,10 @@ import { getUser } from "@/actions/authAction";
 import { getDeliveryCompany } from "@/actions/services";
 import { getTarifsById } from "@/actions/tarifs";
 import { getZones } from "@/actions/zones";
+import { TarifCards } from "@/components/services/tarifs/TarifCard";
 import AddTarifsBtn from "@/components/tarifs/AddTarifsBtn";
 import { roboto } from "@/lib/fonts";
-import React from "react";
+import React, { Suspense } from "react";
 
 async function page() {
   const user = await getUser();
@@ -55,6 +56,11 @@ async function page() {
       )}
 
       {/* TARIFS LISTS */}
+      {tarifs.length && (
+        <Suspense fallback={<p>Chargement...</p>}>
+          <TarifCards tarifs={tarifs} />
+        </Suspense>
+      )}
     </div>
   );
 }
