@@ -1,9 +1,8 @@
 import { getUser } from "@/actions/authAction";
 import { getDeliveryCompany } from "@/actions/services";
+import { getTarifsById } from "@/actions/tarifs";
 import { getZones } from "@/actions/zones";
-import AddZone from "@/components/services/zones/AddZone";
-import { GroupZoneCard } from "@/components/services/zones/ZoneCard";
-import { Card } from "@/components/ui/card";
+import AddTarifsBtn from "@/components/tarifs/AddTarifsBtn";
 import { roboto } from "@/lib/fonts";
 import React from "react";
 
@@ -11,46 +10,51 @@ async function page() {
   const user = await getUser();
   if (!user) return null;
 
+  //   GET COMPANIE
   const companies = await getDeliveryCompany();
   if (!companies || companies.length < 1) return null;
 
   const company = companies[0];
   if (!company || company.ownerId !== user.id) return null;
 
+  //   GET ZONES
   const zones = await getZones(company.id);
+
+  if (!zones || zones.length < 1) return null;
+
+  //   GET TARIFS
+  const { tarifs } = await getTarifsById(company.id);
 
   return (
     <div className="w-full px-4 py-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-10">
         <h3 className={`${roboto.className} text-2xl font-semibold`}>
-          MES ZONES
+          Les Tarifs ou Relations intra-zones
         </h3>
         <div className="flex flex-col gap-2 w-full md:w-auto max-w-lg">
           <p className="text-muted-foreground">
-            Gérez vos zones de livraison : ajouter, modifier ou supprimer.
+            Gérez vos tarifs entre zones de livraison : ajouter, modifier ou
+            supprimer.
           </p>
-          <AddZone
-            className="flex items-center gap-2 md:w-auto w-full mt-2 md:mt-0 "
-            companyId={company.id}
-          />
+          <AddTarifsBtn />
         </div>
       </div>
 
-      {/* Liste des zones */}
-      {zones && zones.length > 0 ? (
-        <GroupZoneCard companyId={company.id} zones={zones} />
-      ) : (
-        <Card className="border border-muted/30 shadow-sm rounded-2xl p-6 text-center">
-          <h2 className="text-lg font-medium text-muted-foreground">
-            Aucune zone trouvée
+      {/* NO TARIFS */}
+      {tarifs.length < 1 && (
+        <div
+          className="border-dashed w-full max-w-lg mx-auto h-32 border-2 bg-secondary/30 shadow
+        flex flex-col justify-center items-center
+        "
+        >
+          <h2 className={`${roboto.className} text-lg font-medium opacity-75`}>
+            Aucune relation intra-zone trouvée
           </h2>
-          <AddZone
-            className="mt-1 flex items-center justify-center gap-2 mx-auto"
-            companyId={company.id}
-          />
-        </Card>
+        </div>
       )}
+
+      {/* TARIFS LISTS */}
     </div>
   );
 }

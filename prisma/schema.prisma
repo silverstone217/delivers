@@ -77,7 +77,8 @@ model DeliveryCompany {
   logo        String?
   contact     Contact?
 
-  zones Zone[]
+  zones  Zone[]
+  tarifs Tarif[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -136,37 +137,46 @@ model Tarif {
   id   String @id @default(cuid())
   name String
 
-  price    Float
-  interval Interval?
-  express  Boolean   @default(false)
+  price   Float
+  express Boolean @default(false)
 
   senderId     String
   receiverId   String
   senderZone   Zone   @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
   receiverZone Zone   @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  companyId String
+  company   DeliveryCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-model Interval {
-  id String @id @default(cuid())
-
-  minLength Float?
-  maxLength Float?
-  minWidth  Float?
-  maxWidth  Float?
-  minWeight Float?
-  maxWeight Float?
-
-  price Float
-
-  tarifId String @unique
-  tarif   Tarif  @relation(fields: [tarifId], references: [id], onDelete: Cascade)
+  minLength Float @default(0)
+  maxLength Float @default(0)
+  minWidth  Float @default(0)
+  maxWidth  Float @default(0)
+  minWeight Float @default(0)
+  maxWeight Float @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// model Interval {
+//   id String @id @default(cuid())
+
+//   minLength Float?
+//   maxLength Float?
+//   minWidth  Float?
+//   maxWidth  Float?
+//   minWeight Float?
+//   maxWeight Float?
+
+//   price Float
+
+//   tarifId String @unique
+//   tarif   Tarif  @relation(fields: [tarifId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
 
 // ----------------------------
 //  CONTACTS
