@@ -146,3 +146,51 @@ export const addTarif = async (data: TarifType) => {
     };
   }
 };
+
+// DELETE TARIF
+export const deleteTarif = async ({
+  companyId,
+  tarifId,
+}: {
+  companyId: string;
+  tarifId: string;
+}) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié. Veuillez vous connecter pour continuer.",
+      };
+    }
+
+    // ✅ Vérification que la compagnie appartient bien à l'utilisateur
+    const company = await prisma.deliveryCompany.findFirst({
+      where: { id: companyId, ownerId: user.id },
+    });
+
+    if (!company) {
+      return {
+        error: true,
+        message: "Cette compagnie n'existe pas ou ne vous appartient pas.",
+      };
+    }
+
+    await prisma.tarif.delete({
+      where: {
+        id: tarifId,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Ce tarif a ete supprime avec success",
+    };
+  } catch (error) {
+    console.error("Erreur addTarif:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la suppression de la relation",
+    };
+  }
+};

@@ -5,7 +5,7 @@ import AddZone from "@/components/services/zones/AddZone";
 import { GroupZoneCard } from "@/components/services/zones/ZoneCard";
 import { Card } from "@/components/ui/card";
 import { roboto } from "@/lib/fonts";
-import React from "react";
+import React, { Suspense } from "react";
 
 async function page() {
   const user = await getUser();
@@ -39,7 +39,9 @@ async function page() {
 
       {/* Liste des zones */}
       {zones && zones.length > 0 ? (
-        <GroupZoneCard companyId={company.id} zones={zones} />
+        <Suspense fallback={<p>Chargement...</p>}>
+          <GroupZoneCard companyId={company.id} zones={zones} />
+        </Suspense>
       ) : (
         <Card className="border border-muted/30 shadow-sm rounded-2xl p-6 text-center">
           <h2 className="text-lg font-medium text-muted-foreground">
