@@ -1,6 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { TarifSchema, TarifType } from "@/schema/tarifs";
+import { getUser } from "../authAction";
+import { capitaliseFirstLetter } from "@/utils/function";
 
 // GET TARIFS BY COMPANY_ID
 export const getTarifsById = async (companyId: string) => {
@@ -26,6 +29,104 @@ export const getTarifsById = async (companyId: string) => {
       success: false,
       message: "Impossible de récupérer les tarifs.",
       tarifs: [],
+    };
+  }
+};
+
+// ADD TARIF
+export const addTarif = async (data: TarifType) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié. Veuillez vous connecter pour continuer.",
+      };
+    }
+
+    // ✅ Validation stricte avec Zod
+    const result = TarifSchema.safeParse(data);
+    if (!result.success) {
+      const errMsg = result.error.issues.map((e) => e.message).join(", ");
+      return {
+        error: true,
+        message:
+          errMsg || "Erreur de validation des données. Vérifiez vos champs.",
+      };
+    }
+
+    // ✅ Données validées et typées
+    const {
+      companyId,
+      maxLength,
+      maxWeight,
+      maxWidth,
+      minLength,
+      minWeight,
+      minWidth,
+      receiver,
+      sender,
+      price,
+      express,
+    } = result.data;
+
+    // ✅ Vérification que la compagnie appartient bien à l'utilisateur
+    const company = await prisma.deliveryCompany.findFirst({
+      where: { id: companyId, ownerId: user.id },
+    });
+
+    if (!company) {
+      return {
+        error: true,
+        message: "Cette compagnie n'existe pas ou ne vous appartient pas.",
+      };
+    }
+
+    // ✅ Vérifier que les zones existent
+    const [senderZone, receiverZone] = await Promise.all([
+      prisma.zone.findUnique({ where: { id: sender } }),
+      prisma.zone.findUnique({ where: { id: receiver } }),
+    ]);
+
+    if (!senderZone || !receiverZone) {
+      return {
+        error: true,
+        message: "Zone expéditrice ou destinataire introuvable.",
+      };
+    }
+
+    // ✅ Génération du nom
+    const name = `${capitaliseFirstLetter(
+      senderZone.name
+    )}_${capitaliseFirstLetter(receiverZone.name)}`;
+
+    // ✅ Création du tarif
+    await prisma.tarif.create({
+      data: {
+        companyId,
+        name,
+        price,
+        express,
+        minLength,
+        maxLength,
+        minWidth,
+        maxWidth,
+        minWeight,
+        maxWeight,
+        senderId: senderZone.id,
+        receiverId: receiverZone.id,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Votre tarif a été ajouté avec succès ✅",
+    };
+  } catch (error) {
+    console.error("Erreur addTarif:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de l'ajout du tarif.",
     };
   }
 };

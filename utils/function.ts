@@ -20,3 +20,17 @@ export function formatJoinedDate(value: string | Date | number) {
     // timeStyle: "short",
   });
 }
+
+// FUNCTION IS GREATER THAN
+
+export function isGreaterThan(a: string | number, b: string | number): boolean {
+  const numA = Number(a);
+  const numB = Number(b);
+
+  if (isNaN(numA) || isNaN(numB)) {
+    console.warn("Valeurs non numériques :", { a, b });
+    return false;
+  }
+
+  return numA > numB;
+}
