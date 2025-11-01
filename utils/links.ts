@@ -31,3 +31,34 @@ export const EspacesLinks = [
     icon: Contact,
   },
 ];
+
+export const HomeLinks = [
+  {
+    label: "Accueil",
+    link: "/",
+    icon: House,
+  },
+  {
+    label: "Espace",
+    link: "/espace",
+    icon: Kanban,
+  },
+
+  {
+    label: "Nos solutions",
+    link: "/a-propos",
+    icon: Contact,
+  },
+
+  {
+    label: "A propos",
+    link: "/a-propos",
+    icon: Contact,
+  },
+
+  {
+    label: "Contacts",
+    link: "/contacts",
+    icon: Contact,
+  },
+];

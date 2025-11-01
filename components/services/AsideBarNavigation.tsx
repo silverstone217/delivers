@@ -34,11 +34,13 @@ const AsideBarNavigation = ({ company }: Props) => {
       "
       >
         {/* ESPACE COMPANY */}
-        <div className="text-md font-bold px-6 mb-4 text-black">
-          {capitaliseFirstLetter(SITE_NAME)}
-          {/* <span>Espace</span>
+        <Link href={"/"}>
+          <h2 className="text-md font-bold px-6 mb-4 text-black">
+            {capitaliseFirstLetter(SITE_NAME)}
+            {/* <span>Espace</span>
           <span>{capitaliseFirstLetter(company.name)}</span> */}
-        </div>
+          </h2>
+        </Link>
 
         {/* separator */}
         <Separator />

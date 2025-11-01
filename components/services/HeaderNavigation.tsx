@@ -18,6 +18,8 @@ import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { EspacesLinks } from "@/utils/links";
 import { SITE_NAME } from "@/lib/env";
+import { LucideProps } from "lucide-react";
+import { IconType } from "react-icons/lib";
 
 type Props = {
   company: DeliveryCompany;
@@ -34,11 +36,13 @@ const HeaderNavigation = ({ company }: Props) => {
       justify-between backdrop-blur-lg
        p-4"
       >
-        <h2 className="max-w-56 line-clamp-1 font-bold text-lg text-black">
-          {capitaliseFirstLetter(SITE_NAME)}
-        </h2>
+        <Link href={"/"}>
+          <h2 className="max-w-56 line-clamp-1 font-bold text-lg text-black">
+            {capitaliseFirstLetter(SITE_NAME)}
+          </h2>
+        </Link>
 
-        <SheetNav company={company} />
+        <SheetNav company={company} dataLinks={EspacesLinks} />
       </div>
     </header>
   );
@@ -46,7 +50,22 @@ const HeaderNavigation = ({ company }: Props) => {
 
 export default HeaderNavigation;
 
-const SheetNav = ({}: Props) => {
+export type DataLinkWithIconType = {
+  label: string;
+  link: string;
+  icon:
+    | React.ForwardRefExoticComponent<
+        Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+      >
+    | IconType;
+};
+
+export type SheetNavType = {
+  dataLinks: DataLinkWithIconType[];
+  company?: DeliveryCompany | null;
+};
+
+export const SheetNav = ({ dataLinks }: SheetNavType) => {
   const user = useCurrentUser();
 
   if (!user) return null;
@@ -74,7 +93,7 @@ const SheetNav = ({}: Props) => {
           className="w-full flex flex-col gap-2 flex-1 
           pt-4 px-2"
         >
-          {EspacesLinks.map((link, idx) => {
+          {dataLinks.map((link, idx) => {
             return (
               <SheetClose key={idx} asChild>
                 <Link
