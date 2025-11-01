@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,20 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
         toast.error(result.message);
         return;
       }
+
+      setMaxLength("");
+      setMinLength("");
+
+      setMinWeight("");
+      setMaxWeight("");
+
+      setMinWidth("");
+      setMaxWidth("");
+
+      setPrice("");
+
+      setReceiver("");
+      setSender("");
 
       toast.success("Tarif ajouté avec succès !");
       router.refresh();
@@ -250,7 +264,7 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="w-full flex items-center justify-between gap-2">
             <Label htmlFor="express" className="flex items-center gap-1">
               <FaShippingFast className="w-4 h-4 text-primary" />
               Express livraion

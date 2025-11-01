@@ -95,6 +95,22 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
+    // ✅ Vérifier si une relation entre ces zones existe déjà
+    const existingTarif = await prisma.tarif.findFirst({
+      where: {
+        senderId: senderZone.id,
+        receiverId: receiverZone.id,
+        companyId: company.id,
+      },
+    });
+
+    if (existingTarif) {
+      return {
+        error: true,
+        message: `Un tarif existe déjà entre ${senderZone.name.toUpperCase()} → ${receiverZone.name.toUpperCase()}. Vous ne pouvez pas créer une autre relation entre ces zones.`,
+      };
+    }
+
     // ✅ Génération du nom
     const name = `${capitaliseFirstLetter(
       senderZone.name
