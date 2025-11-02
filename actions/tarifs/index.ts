@@ -95,8 +95,8 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
-    // ✅ Vérifier si une relation entre ces zones existe déjà
-    const existingTarif = await prisma.tarif.findFirst({
+    // ✅ Récupération de tous les tarifs existants entre ces zones
+    const existingTarifs = await prisma.tarif.findMany({
       where: {
         senderId: senderZone.id,
         receiverId: receiverZone.id,
@@ -104,10 +104,27 @@ export const addTarif = async (data: TarifType) => {
       },
     });
 
-    if (existingTarif) {
+    // ✅ Vérification stricte de chevauchement
+    const overlap = existingTarifs.some((t) => {
+      // 🔹 Teste le chevauchement de chaque dimension séparément
+      const overlapLength = !(
+        maxLength < t.minLength || minLength > t.maxLength
+      );
+      const overlapWidth = !(maxWidth < t.minWidth || minWidth > t.maxWidth);
+      const overlapWeight = !(
+        maxWeight < t.minWeight || minWeight > t.maxWeight
+      );
+
+      // 🔹 Si les trois se chevauchent en même temps → refus
+      return overlapLength && overlapWidth && overlapWeight;
+    });
+
+    if (overlap) {
       return {
         error: true,
-        message: `Un tarif existe déjà entre ${senderZone.name.toUpperCase()} → ${receiverZone.name.toUpperCase()}. Vous ne pouvez pas créer une autre relation entre ces zones.`,
+        message: `Impossible d'ajouter ce tarif. 
+        Un tarif existant entre ${senderZone.name.toUpperCase()} → ${receiverZone.name.toUpperCase()} 
+        possède déjà des intervalles (poids, longueur et largeur) qui se chevauchent entièrement.`,
       };
     }
 

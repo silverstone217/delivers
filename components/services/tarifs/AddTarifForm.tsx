@@ -130,7 +130,7 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-6 md:gap-8 w-full">
           {/* Zones expéditeur / destinataire */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 w-full">
             {/* Expéditeur */}
             <div className="grid gap-2">
               <Label
@@ -169,7 +169,7 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
           </div>
 
           {/* Dimensions */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 w-full">
             {/* Longueur */}
             <div className="grid gap-2">
               <Label className="flex items-center gap-1">
@@ -278,20 +278,24 @@ export default function AddTarifForm({ companyId, zones }: AddTarifFormProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end pt-2 gap-4">
+          <div className="flex justify-end pt-2 gap-4 w-full flex-wrap">
             {/* RETOUR */}
             <Button
               type="button"
               disabled={loading}
               variant={"outline"}
-              className="min-w-40"
+              className="md:min-w-40 shrink-0 grow md:grow-0"
               onClick={() => router.back()}
             >
               Retour
             </Button>
 
             {/* SAVE */}
-            <Button type="submit" disabled={isDisabled} className="min-w-40">
+            <Button
+              type="submit"
+              disabled={isDisabled}
+              className="md:min-w-40 shrink-0 grow md:grow-0"
+            >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Enregistrer
             </Button>
