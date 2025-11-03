@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     NO_IMAGE_URL: process.env.NO_IMAGE_URL,
     SITE_NAME: process.env.SITE_NAME,
     HERO_IMAGE: process.env.HERO_IMAGE,
+    TARIF_IMAGE: process.env.TARIF_IMAGE,
   },
 
   // IMAGES

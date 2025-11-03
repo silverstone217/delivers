@@ -6,3 +6,4 @@ export const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN!;
 export const NO_IMAGE_URL = process.env.NO_IMAGE_URL!;
 export const SITE_NAME = process.env.SITE_NAME!;
 export const HERO_IMAGE = process.env.HERO_IMAGE!;
+export const TARIF_IMAGE = process.env.TARIF_IMAGE!;

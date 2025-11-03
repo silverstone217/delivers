@@ -97,11 +97,11 @@ export const quartiersParCommune = {
   Bandalungwa: [
     "Molard",
     "Lubudi",
-    "Makelele (avant: Synkin)",
+    "Makelele",
     "Lumumba",
     "Camp Kokolo",
     "Kasa-Vubu",
-    "Adoula (avant: Mawa)",
+    "Adoula",
   ],
   Lingwala: [
     "Ngiri-Ngiri",
