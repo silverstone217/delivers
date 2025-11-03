@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     DATABASE_URL: process.env.DATABASE_URL,
     NO_IMAGE_URL: process.env.NO_IMAGE_URL,
     SITE_NAME: process.env.SITE_NAME,
+    HERO_IMAGE: process.env.HERO_IMAGE,
   },
 
   // IMAGES

@@ -1,27 +1,30 @@
-import { roboto } from "@/lib/fonts";
-import { capitaliseFirstLetter } from "@/utils/function";
+import { HERO_IMAGE } from "@/lib/env";
+import Image from "next/image";
 import React from "react";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import { SITE_NAME } from "@/lib/env";
-import { ChevronRight } from "lucide-react";
+import CheckFormPrice from "./CheckFormPrice";
 
 const Hero = () => {
   return (
-    <main className="max-w-7xl mx-auto p-6 flex gap-3 flex-col ">
-      <h2 className={`${roboto.className} text-5xl font-bold`}>
-        {capitaliseFirstLetter(SITE_NAME)}
-      </h2>
-      <p className="text-lg ">
-        Bienvenue sur <span>{capitaliseFirstLetter(SITE_NAME)}</span>, le
-        comparateur de prix de livraison en ligne au Congo !
-      </p>
-      <Link href={"/espace"} className="w-fit">
-        <Button>
-          <span>Commencer maintenant</span>
-          <ChevronRight />
-        </Button>
-      </Link>
+    <main className="max-w-7xl mx-auto px-6 pb-6 pt-6">
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-6 items-start">
+        {/* 1. Le formulaire à gauche (ou à droite selon l'ordre) */}
+        <section className="w-full">
+          <CheckFormPrice />
+        </section>
+
+        {/* 2. L'image à droite */}
+        <section className="w-full">
+          <Image
+            src={HERO_IMAGE}
+            priority
+            // Ajuster la hauteur pour qu'elle corresponde au formulaire si possible
+            className="w-full object-cover rounded-lg shadow-xl min-h-full"
+            alt="HERO IMAGE : women with computer"
+            width={1200}
+            height={1000}
+          />
+        </section>
+      </div>
     </main>
   );
 };

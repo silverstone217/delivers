@@ -1,5 +1,7 @@
-import { Kanban, Contact, MapPinHouse, House } from "lucide-react";
+import { Kanban, Contact, MapPinHouse, House, Info } from "lucide-react";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
+import { MdOutlineHomeRepairService } from "react-icons/md";
 
 export const EspacesLinks = [
   {
@@ -7,6 +9,7 @@ export const EspacesLinks = [
     link: "/",
     icon: House,
   },
+
   {
     label: "Espace",
     link: "/espace",
@@ -39,6 +42,11 @@ export const HomeLinks = [
     icon: House,
   },
   {
+    label: "Tarifs",
+    link: "/tarifs",
+    icon: FaMoneyBillTransfer,
+  },
+  {
     label: "Espace",
     link: "/espace",
     icon: Kanban,
@@ -47,13 +55,13 @@ export const HomeLinks = [
   {
     label: "Nos solutions",
     link: "/a-propos",
-    icon: Contact,
+    icon: MdOutlineHomeRepairService,
   },
 
   {
     label: "A propos",
     link: "/a-propos",
-    icon: Contact,
+    icon: Info,
   },
 
   {

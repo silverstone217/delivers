@@ -68,7 +68,7 @@ export type SheetNavType = {
 export const SheetNav = ({ dataLinks }: SheetNavType) => {
   const user = useCurrentUser();
 
-  if (!user) return null;
+  // if (!user) return null;
 
   return (
     <Sheet>
@@ -116,18 +116,22 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
         <Separator />
         <div className="w-full flex flex-col gap-4 py-4 px-6">
           {/* PROFILE */}
-          <div className="w-full flex items-center gap-1.5">
-            <UserAvatar name={user.name} image={user.image} />
-            <div className="flex flex-col text-xs">
-              <span className="text-sm line-clamp-1 font-medium capitalize">
-                {user.name}
-              </span>
-              <span className=" line-clamp-1 text-gray-500">{user.email}</span>
+          {user && (
+            <div className="w-full flex items-center gap-1.5">
+              <UserAvatar name={user.name} image={user.image} />
+              <div className="flex flex-col text-xs">
+                <span className="text-sm line-clamp-1 font-medium capitalize">
+                  {user.name}
+                </span>
+                <span className=" line-clamp-1 text-gray-500">
+                  {user.email}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* DECONNEXION BTN */}
-          <LogoutBtn />
+          {user && <LogoutBtn />}
         </div>
       </SheetContent>
     </Sheet>
