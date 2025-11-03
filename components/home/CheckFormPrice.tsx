@@ -135,7 +135,7 @@ const CheckFormPrice = () => {
             <h3 className="font-bold text-base text-blue-700">
               1. Lieu de {`l'Envoi`} (Départ)
             </h3>
-            <div className="w-full grid gap-4 md:grid-cols-2 grid-cols-1">
+            <div className="w-full grid gap-4 lg:grid-cols-2 grid-cols-1">
               <div className="w-full grid gap-1.5">
                 <Label>Commune</Label>
                 <SelectComponentCommune
@@ -168,7 +168,7 @@ const CheckFormPrice = () => {
             <h3 className="font-bold text-base text-green-700">
               2. Lieu de la Livraison (Arrivée)
             </h3>
-            <div className="w-full grid gap-4 md:grid-cols-2 grid-cols-1">
+            <div className="w-full grid gap-4 lg:grid-cols-2 grid-cols-1">
               <div className="w-full grid gap-1.5">
                 <Label>Commune</Label>
                 <SelectComponentCommune
