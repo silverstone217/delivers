@@ -23,7 +23,7 @@ import { isEmptyString } from "@/utils/function";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation"; // 💡 Ajout de useRouter
+import { useRouter } from "next/navigation"; // 💡 Ajout de useRouter
 import Image from "next/image";
 import { TARIF_IMAGE } from "@/lib/env";
 import { getTarifsByParams } from "@/actions/tarifs";
@@ -42,29 +42,43 @@ type Tarif = {
   contacts: Contact | null;
 };
 
-const CheckFormComponent = () => {
-  const searchParams = useSearchParams();
+type InitialSearchParams = { [key: string]: string | string[] | undefined };
+
+const CheckFormComponent = ({
+  initialSearchParams,
+}: {
+  initialSearchParams: InitialSearchParams;
+}) => {
+  // const searchParams = useSearchParams();
   const router = useRouter();
 
   // 1. Initialisation des états à partir de l'URL
-  // ... (Identique, on garde les états contrôlés pour le formulaire)
   const [communeDepart, setCommuneDepart] = useState(
-    searchParams.get("communeDepart") || ""
+    (initialSearchParams.communeDepart as string) || ""
   );
   const [quartierDepart, setQuartierDepart] = useState(
-    searchParams.get("quartierDepart") || ""
+    (initialSearchParams.quartierDepart as string) || ""
   );
   const [communeArrivee, setCommuneArrivee] = useState(
-    searchParams.get("communeArrivee") || ""
+    (initialSearchParams.communeArrivee as string) || ""
   );
   const [quartierArrivee, setQuartierArrivee] = useState(
-    searchParams.get("quartierArrivee") || ""
+    (initialSearchParams.quartierArrivee as string) || ""
   );
-  const [width, setWidth] = useState(searchParams.get("width") || "");
-  const [weight, setWeight] = useState(searchParams.get("weight") || "");
-  const [length, setLength] = useState(searchParams.get("length") || "");
+
+  // Les dimensions et Express
+  const [width, setWidth] = useState(
+    (initialSearchParams.width as string) || ""
+  );
+  const [weight, setWeight] = useState(
+    (initialSearchParams.weight as string) || ""
+  );
+  const [length, setLength] = useState(
+    (initialSearchParams.length as string) || ""
+  );
+
   const [isExpress, setIsExpress] = useState(
-    searchParams.get("isExpress") === "true"
+    initialSearchParams.isExpress === "true"
   );
 
   const [tarifs, setTarifs] = useState<Tarif[]>([]);
@@ -276,6 +290,7 @@ const CheckFormComponent = () => {
                       disabled={loading}
                       onValueChange={setCommuneDepart}
                       value={communeDepart}
+                      setReliedValue={setQuartierDepart}
                     />
                   </div>
 
@@ -309,6 +324,7 @@ const CheckFormComponent = () => {
                       disabled={loading}
                       onValueChange={setCommuneArrivee}
                       value={communeArrivee}
+                      setReliedValue={setQuartierArrivee}
                     />
                   </div>
 

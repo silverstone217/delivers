@@ -15,6 +15,7 @@ interface SelectComponentCommuneProps {
   data: string[];
   disabled: boolean;
   placeholder: string;
+  setReliedValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const SelectComponentCommune = ({
@@ -24,12 +25,16 @@ export const SelectComponentCommune = ({
   value,
   className,
   placeholder,
+  setReliedValue,
 }: SelectComponentCommuneProps) => {
   return (
     <Select
       value={value}
       disabled={disabled}
-      onValueChange={(e) => onValueChange(e)}
+      onValueChange={(e) => {
+        onValueChange(e);
+        setReliedValue("");
+      }}
     >
       <SelectTrigger className={`${className} w-full`}>
         <SelectValue placeholder={placeholder} />

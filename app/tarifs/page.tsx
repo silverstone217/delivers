@@ -2,28 +2,21 @@ import CheckFormComponent from "@/components/home/CheckTarifComponent";
 import Header from "@/components/home/Header";
 import React from "react";
 
-async function page({
+async function Page({
   searchParams,
 }: {
-  searchParams: Record<string, string>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const communeDepart = searchParams.communeDepart;
-  const quartierDepart = searchParams.quartierDepart;
-  const communeArrivee = searchParams.communeArrivee;
-  const quartierArrivee = searchParams.quartierArrivee;
-  const width = searchParams.width;
-  const weight = searchParams.weight;
-  const length = searchParams.length;
-  const isExpress = searchParams.isExpress === "true";
+  const params = await searchParams;
 
   return (
     <div className="w-full">
       {/* HEADER */}
       <Header />
       {/* CONTENT */}
-      <CheckFormComponent />
+      <CheckFormComponent initialSearchParams={params} />
     </div>
   );
 }
 
-export default page;
+export default Page;

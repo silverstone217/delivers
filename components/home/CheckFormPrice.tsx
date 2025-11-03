@@ -144,6 +144,7 @@ const CheckFormPrice = () => {
                   disabled={loading}
                   onValueChange={setCommune}
                   value={commune}
+                  setReliedValue={setQuartier}
                 />
               </div>
 
@@ -177,6 +178,7 @@ const CheckFormPrice = () => {
                   disabled={loading}
                   onValueChange={setCommuneDestination}
                   value={communeDestination}
+                  setReliedValue={setQuartierDestination}
                 />
               </div>
 
