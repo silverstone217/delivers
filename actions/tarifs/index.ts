@@ -1,7 +1,12 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { TarifSchema, TarifType } from "@/schema/tarifs";
+import {
+  TarifSchema,
+  TarifType,
+  TarifUpdateSchema,
+  TarifUpdateType,
+} from "@/schema/tarifs";
 import { getUser } from "../authAction";
 import { capitaliseFirstLetter } from "@/utils/function";
 
@@ -44,7 +49,7 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
-    // ✅ Validation stricte avec Zod
+    // ✅ Validation stricte
     const result = TarifSchema.safeParse(data);
     if (!result.success) {
       const errMsg = result.error.issues.map((e) => e.message).join(", ");
@@ -55,7 +60,6 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
-    // ✅ Données validées et typées
     const {
       companyId,
       maxLength,
@@ -70,7 +74,7 @@ export const addTarif = async (data: TarifType) => {
       express,
     } = result.data;
 
-    // ✅ Vérification que la compagnie appartient bien à l'utilisateur
+    // ✅ Vérification propriétaire
     const company = await prisma.deliveryCompany.findFirst({
       where: { id: companyId, ownerId: user.id },
     });
@@ -82,7 +86,7 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
-    // ✅ Vérifier que les zones existent
+    // ✅ Vérifie les zones
     const [senderZone, receiverZone] = await Promise.all([
       prisma.zone.findUnique({ where: { id: sender } }),
       prisma.zone.findUnique({ where: { id: receiver } }),
@@ -95,35 +99,42 @@ export const addTarif = async (data: TarifType) => {
       };
     }
 
-    // ✅ Récupération de tous les tarifs existants entre ces zones
+    // ✅ Récupération des tarifs existants (même compagnie)
     const existingTarifs = await prisma.tarif.findMany({
       where: {
+        companyId: company.id,
         senderId: senderZone.id,
         receiverId: receiverZone.id,
-        companyId: company.id,
       },
     });
 
     // ✅ Vérification stricte de chevauchement
     const overlap = existingTarifs.some((t) => {
-      // 🔹 Teste le chevauchement de chaque dimension séparément
-      const overlapLength = !(
+      // 1️⃣ Teste le chevauchement de chaque dimension séparément
+      const lengthOverlap = !(
         maxLength < t.minLength || minLength > t.maxLength
       );
-      const overlapWidth = !(maxWidth < t.minWidth || minWidth > t.maxWidth);
-      const overlapWeight = !(
+      const widthOverlap = !(maxWidth < t.minWidth || minWidth > t.maxWidth);
+      const weightOverlap = !(
         maxWeight < t.minWeight || minWeight > t.maxWeight
       );
 
-      // 🔹 Si les trois se chevauchent en même temps → refus
-      return overlapLength && overlapWidth && overlapWeight;
+      // 2️⃣ Si les trois se chevauchent → vérifier le type express
+      if (lengthOverlap && widthOverlap && weightOverlap) {
+        // Même express → CONFLIT
+        if (t.express === express) {
+          return true;
+        }
+      }
+      return false;
     });
 
     if (overlap) {
       return {
         error: true,
-        message: `Impossible d'ajouter ce tarif. 
-        Un tarif existant entre ${senderZone.name.toUpperCase()} → ${receiverZone.name.toUpperCase()} 
+        message: `Impossible d'ajouter ce tarif : 
+        un tarif entre ${senderZone.name.toUpperCase()} → ${receiverZone.name.toUpperCase()} 
+        avec le même type (${express ? "express" : "standard"}) 
         possède déjà des intervalles (poids, longueur et largeur) qui se chevauchent entièrement.`,
       };
     }
@@ -163,6 +174,119 @@ export const addTarif = async (data: TarifType) => {
     };
   }
 };
+
+// UPDATE TARIF
+export async function updateTarif(data: TarifUpdateType) {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return { error: true, message: "Non authentifié." };
+    }
+
+    // ✅ Validation stricte avec Zod
+    const result = TarifUpdateSchema.safeParse(data);
+    if (!result.success) {
+      const errMsg = result.error.issues.map((e) => e.message).join(", ");
+      return {
+        error: true,
+        message: errMsg || "Erreur de validation des données.",
+      };
+    }
+
+    const {
+      id,
+      companyId,
+      minLength,
+      maxLength,
+      minWidth,
+      maxWidth,
+      minWeight,
+      maxWeight,
+      price,
+      express,
+    } = result.data;
+
+    // ✅ Vérifie que le tarif existe et appartient à l'utilisateur
+    const tarif = await prisma.tarif.findUnique({
+      where: { id },
+      include: { company: true },
+    });
+
+    if (!tarif || tarif.company.ownerId !== user.id) {
+      return {
+        error: true,
+        message: "Tarif introuvable ou non autorisé.",
+      };
+    }
+
+    // ✅ Vérifie la cohérence des intervalles
+    if (minLength > maxLength || minWidth > maxWidth || minWeight > maxWeight) {
+      return {
+        error: true,
+        message:
+          "Les valeurs minimales doivent être inférieures aux valeurs maximales.",
+      };
+    }
+
+    // ✅ Récupère tous les tarifs similaires (même compagnie, mêmes zones)
+    const existingTarifs = await prisma.tarif.findMany({
+      where: {
+        companyId,
+        senderId: tarif.senderId,
+        receiverId: tarif.receiverId,
+        NOT: { id }, // exclure le tarif en cours de mise à jour
+      },
+    });
+
+    // ✅ Vérifie le chevauchement complet sur les 3 dimensions
+    const overlap = existingTarifs.some((t) => {
+      // Teste les intervalles
+      const overlapLength = !(
+        maxLength < t.minLength || minLength > t.maxLength
+      );
+      const overlapWidth = !(maxWidth < t.minWidth || minWidth > t.maxWidth);
+      const overlapWeight = !(
+        maxWeight < t.minWeight || minWeight > t.maxWeight
+      );
+
+      // Si les 3 se chevauchent et que express est identique → conflit
+      return (
+        overlapLength && overlapWidth && overlapWeight && t.express === express
+      );
+    });
+
+    if (overlap) {
+      return {
+        error: true,
+        message:
+          "Impossible de modifier ce tarif : un autre tarif existant possède déjà des intervalles identiques ou se chevauchant avec le même mode (express ou standard).",
+      };
+    }
+
+    // ✅ Mise à jour finale
+    await prisma.tarif.update({
+      where: { id },
+      data: {
+        minLength,
+        maxLength,
+        minWidth,
+        maxWidth,
+        minWeight,
+        maxWeight,
+        price,
+        express,
+      },
+    });
+
+    return { error: false, message: "Tarif mis à jour avec succès ✅" };
+  } catch (error) {
+    console.error("Erreur updateTarif:", error);
+    return {
+      error: true,
+      message: "Erreur lors de la mise à jour du tarif.",
+    };
+  }
+}
 
 // DELETE TARIF
 export const deleteTarif = async ({
