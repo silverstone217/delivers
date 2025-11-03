@@ -335,3 +335,165 @@ export const deleteTarif = async ({
     };
   }
 };
+
+// Je suppose que vous avez défini GetTarifsByParamsProps quelque part
+type GetTarifsByParamsProps = {
+  communeArrivee: string;
+  communeDepart: string;
+  express: boolean;
+  length: string; // Viennent de l'URL, à convertir en Number
+  quartierArrivee: string;
+  quartierDepart: string;
+  weight: string; // Viennent de l'URL, à convertir en Number
+  width: string; // Viennent de l'URL, à convertir en Number
+};
+
+// TROUVER LE QUARTIER ET LA COMMUNE
+const findZoneIdsByLocation = async (
+  communeName: string,
+  quartierName: string
+): Promise<string[]> => {
+  const communes = await prisma.commune.findMany({
+    where: {
+      name: communeName,
+      quartiers: {
+        some: {
+          name: quartierName,
+        },
+      },
+    },
+    select: {
+      zoneId: true,
+    },
+  });
+  return communes.map((c) => c.zoneId);
+};
+// -----------------------------------------------------------------
+
+// get Tarifs By Params (Complétée)
+export const getTarifsByParams = async ({
+  communeArrivee,
+  communeDepart,
+  express,
+  length,
+  quartierArrivee,
+  quartierDepart,
+  weight,
+  width,
+}: GetTarifsByParamsProps) => {
+  try {
+    // 1. Conversion des valeurs en nombres
+    const numLength = parseFloat(length);
+    const numWeight = parseFloat(weight);
+    const numWidth = parseFloat(width);
+    const isExpress = express; // déjà un booléen
+
+    // Vérification rapide des nombres
+    if (
+      isNaN(numLength) ||
+      isNaN(numWeight) ||
+      isNaN(numWidth) ||
+      numLength <= 0 ||
+      numWeight <= 0 ||
+      numWidth <= 0
+    ) {
+      return {
+        error: true,
+        message: "Dimensions ou poids invalides.",
+        data: [],
+      };
+    }
+
+    // 2. Identification des IDs de Zone pour le départ et l'arrivée
+    const senderZoneIds = await findZoneIdsByLocation(
+      communeDepart,
+      quartierDepart
+    );
+    const receiverZoneIds = await findZoneIdsByLocation(
+      communeArrivee,
+      quartierArrivee
+    );
+
+    if (senderZoneIds.length === 0 || receiverZoneIds.length === 0) {
+      // Aucune zone ne couvre les adresses données
+      return {
+        error: false,
+        message: "Aucune zone de couverture trouvée.",
+        data: [],
+      };
+    }
+
+    // 3. Construction des Filtres Prisma
+    const tarifs = await prisma.tarif.findMany({
+      where: {
+        senderZone: {
+          id: { in: senderZoneIds },
+        },
+        receiverZone: {
+          id: { in: receiverZoneIds },
+        },
+
+        ...(isExpress && { express: true }),
+
+        AND: [
+          // Longueur
+          { minLength: { lte: numLength } },
+          { maxLength: { gte: numLength } },
+
+          // Largeur
+          { minWidth: { lte: numWidth } },
+          { maxWidth: { gte: numWidth } },
+
+          // Poids
+          { minWeight: { lte: numWeight } },
+          { maxWeight: { gte: numWeight } },
+        ],
+      },
+
+      // 4. Inclure les données de la DeliveryCompany
+      include: {
+        company: {
+          include: {
+            contact: true,
+          },
+        },
+      },
+
+      // 5. Ordre (Optionnel: par prix ou express)
+      orderBy: [
+        { price: "asc" }, // Le moins cher en premier
+        { express: "desc" }, // Express avant Standard à prix égal
+      ],
+    });
+
+    // 6. Formatage des données pour le client
+    const formattedData = tarifs.map((t) => ({
+      // Retourne les infos de la compagnie
+      companyId: t.company.id,
+      companyName: t.company.name,
+      companyLogo: t.company.logo,
+
+      // Retourne les infos du tarif trouvé
+      tarifId: t.id,
+      price: t.price,
+      express: t.express,
+
+      // contacts
+      contacts: t.company.contact,
+    }));
+
+    return {
+      error: false,
+      data: formattedData,
+      message: "Tarifs récupérés avec succès.",
+    };
+  } catch (error) {
+    console.error("Erreur getTarifsByParams:", error);
+    return {
+      error: true,
+      message:
+        "Oops! Une erreur s'est produite lors de la recherche des tarifs.",
+      data: [],
+    };
+  }
+};

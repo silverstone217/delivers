@@ -26,59 +26,40 @@ import { Loader } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation"; // 💡 Ajout de useRouter
 import Image from "next/image";
 import { TARIF_IMAGE } from "@/lib/env";
+import { getTarifsByParams } from "@/actions/tarifs";
+import { Contact } from "@prisma/client";
+import TarifCard from "./TarifCard";
 // import { getTarifsByParams } from "@/actions/tarifs"; // 💡 Importez votre Server Action ici (simulé ci-dessous)
 
 // --- SIMULATION D'UNE SERVER ACTION (À REMPLACER PAR VOTRE VRAIE ACTION) ---
 type Tarif = {
-  id: string;
+  companyId: string;
   companyName: string;
+  companyLogo: string | null;
   price: number;
   express: boolean;
+  tarifId: string;
+  contacts: Contact | null;
 };
-const getTarifsByParams = async (params: Record<string, string | boolean>) => {
-  console.log("Appel Server Action avec:", params);
-  // Simuler un délai et des résultats
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  return {
-    success: true,
-    tarifs: [
-      {
-        id: "t1",
-        companyName: "SpeedyGo",
-        price: 3500,
-        express: !!params.isExpress,
-      },
-      {
-        id: "t2",
-        companyName: "ReliableDelivery",
-        price: 4200,
-        express: false,
-      },
-    ] as Tarif[],
-  };
-};
-// --------------------------------------------------------------------------
 
 const CheckFormComponent = () => {
   const searchParams = useSearchParams();
-  const router = useRouter(); // 💡 Utilisé pour modifier l'URL
+  const router = useRouter();
 
   // 1. Initialisation des états à partir de l'URL
-  // Les adresses sont lues une seule fois car on ne veut pas qu'elles changent dans ce composant
+  // ... (Identique, on garde les états contrôlés pour le formulaire)
   const [communeDepart, setCommuneDepart] = useState(
     searchParams.get("communeDepart") || ""
-  ); // 💡 Rendu modifiable
+  );
   const [quartierDepart, setQuartierDepart] = useState(
     searchParams.get("quartierDepart") || ""
-  ); // 💡 Rendu modifiable
+  );
   const [communeArrivee, setCommuneArrivee] = useState(
     searchParams.get("communeArrivee") || ""
-  ); // 💡 Rendu modifiable
+  );
   const [quartierArrivee, setQuartierArrivee] = useState(
     searchParams.get("quartierArrivee") || ""
-  ); // 💡 Rendu modifiable
-
-  // Les dimensions et Express sont modifiables par l'utilisateur
+  );
   const [width, setWidth] = useState(searchParams.get("width") || "");
   const [weight, setWeight] = useState(searchParams.get("weight") || "");
   const [length, setLength] = useState(searchParams.get("length") || "");
@@ -88,72 +69,111 @@ const CheckFormComponent = () => {
 
   const [tarifs, setTarifs] = useState<Tarif[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false); // 💡 NOUVEAU: Pour marquer le premier fetch
 
-  // 2. Fonction de Fetching via Server Action
-  // Utiliser useCallback pour que cette fonction ne soit pas recréée à chaque rendu
-  const fetchTarifs = useCallback(async () => {
-    if (
-      !communeDepart ||
-      !quartierDepart ||
-      !communeArrivee ||
-      !quartierArrivee ||
-      parseFloat(weight) <= 0 ||
-      parseFloat(length) <= 0 ||
-      parseFloat(width) <= 0
-    ) {
-      setTarifs([]); // Vider les résultats si les paramètres sont incomplets
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const params = {
+  // 2. Fonction de Fetching : prend les paramètres explicitement
+  const fetchTarifs = useCallback(
+    async (currentParams: {
+      communeDepart: string;
+      quartierDepart: string;
+      communeArrivee: string;
+      quartierArrivee: string;
+      width: string;
+      weight: string;
+      length: string;
+      express: boolean;
+    }) => {
+      const {
         communeDepart,
         quartierDepart,
         communeArrivee,
         quartierArrivee,
-        width: width,
-        weight: weight,
-        length: length,
-        isExpress: isExpress,
+        width,
+        weight,
+        length,
+        express,
+      } = currentParams;
+
+      if (
+        !communeDepart ||
+        !quartierDepart ||
+        !communeArrivee ||
+        !quartierArrivee ||
+        parseFloat(weight) <= 0 ||
+        parseFloat(length) <= 0 ||
+        parseFloat(width) <= 0
+      ) {
+        setTarifs([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await getTarifsByParams({
+          ...currentParams,
+          // Correction de type pour la server action si elle attend 'express' et non 'isExpress'
+          express: express,
+        });
+
+        if (result.error) {
+          toast.error(result.message);
+          setTarifs([]);
+          return;
+        }
+
+        setTarifs(result.data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Impossible de joindre le service de recherche.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  ); // 💡 PAS DE DÉPENDANCES D'ÉTAT DU FORMULAIRE ICI !
+
+  // 3. Effet pour lancer le fetch initial (UNE SEULE FOIS)
+  useEffect(() => {
+    // Empêche le re-fetch si l'utilisateur change juste un champ après le montage initial
+    if (hasFetched) return;
+
+    // Vérifie si l'URL contient au moins les données minimales pour la recherche
+    if (
+      !isEmptyString(communeDepart) &&
+      !isEmptyString(quartierDepart) &&
+      !isEmptyString(weight)
+    ) {
+      // On construit les paramètres à partir de l'état actuel de l'URL
+      const initialParams = {
+        communeDepart,
+        quartierDepart,
+        communeArrivee,
+        quartierArrivee,
+        width,
+        weight,
+        length,
+        express: isExpress,
       };
 
-      // 💡 APPEL DE LA SERVER ACTION
-      const result = await getTarifsByParams(params);
-
-      if (result.success) {
-        setTarifs(result.tarifs);
-      } else {
-        toast.error("Erreur lors de la recherche des tarifs.");
-        setTarifs([]);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Impossible de joindre le service de recherche.");
-    } finally {
-      setLoading(false);
+      fetchTarifs(initialParams);
+      setHasFetched(true); // Marque que le premier fetch a été fait
     }
   }, [
-    communeDepart,
-    quartierDepart,
     communeArrivee,
-    quartierArrivee,
-    width,
-    weight,
-    length,
+    communeDepart,
+    fetchTarifs,
+    hasFetched,
     isExpress,
+    length,
+    quartierArrivee,
+    quartierDepart,
+    weight,
+    width,
   ]);
 
-  // 3. Effet pour lancer le fetch initial
-  useEffect(() => {
-    // Si tous les paramètres sont présents, lance la recherche initiale
-    if (!isEmptyString(communeDepart) && !isEmptyString(quartierDepart)) {
-      fetchTarifs();
-    }
-  }, [fetchTarifs, communeDepart, quartierDepart]); // Dépendance cruciale
-
-  // 4. Logique de validation du bouton
+  // 4. Logique de validation (Identique)
   const isDisabledBtn = useMemo(() => {
+    // ... (Logique identique)
     const isDimensionInvalid =
       parseFloat(weight) <= 0 ||
       parseFloat(length) <= 0 ||
@@ -181,15 +201,14 @@ const CheckFormComponent = () => {
     width,
   ]);
 
-  // 5. Handler pour le formulaire (met à jour l'URL et refetch)
+  // 5. Handler pour le formulaire (met à jour l'URL et refetch MANUEL)
   const handleUpdateAndFetch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Si désactivé, on arrête
     if (isDisabledBtn) return;
 
-    // 5.1 Construire les nouveaux paramètres (y compris les adresses au cas où elles seraient modifiées)
-    const newParams = new URLSearchParams({
+    // 5.1 Construire les NOUVEAUX paramètres à partir des états actuels
+    const currentParamsForFetch = {
       communeDepart,
       quartierDepart,
       communeArrivee,
@@ -197,14 +216,29 @@ const CheckFormComponent = () => {
       width,
       weight,
       length,
-      isExpress: isExpress.toString(),
-    }).toString();
+      express: isExpress, // Ceci est un BOOLEEN, nécessaire pour le FETCH
+    };
 
-    // 5.2 Mettre à jour l'URL (sans recharger la page complète)
+    // 5.2 Construire les paramètres pour l'URLSearchParams (TOUT DOIT ÊTRE STRING)
+    const newSearchParamsObject: Record<string, string> = {
+      communeDepart,
+      quartierDepart,
+      communeArrivee,
+      quartierArrivee,
+      width,
+      weight,
+      length,
+      isExpress: isExpress.toString(), // Convertit le BOOLEEN en STRING ("true" ou "false")
+    };
+
+    const newParams = new URLSearchParams(newSearchParamsObject).toString(); // ✅ Correction ici
+
+    // 5.3 Mettre à jour l'URL (pour que l'état soit persistant si l'utilisateur rafraîchit)
     router.replace(`/tarifs?${newParams}`, { scroll: false });
 
-    // 5.3 Le useEffect déclenchera le fetch après la mise à jour des états
-    fetchTarifs();
+    // 5.4 Déclencher le fetch MANUELLEMENT avec les paramètres de fetch (inclut le boolean)
+    fetchTarifs(currentParamsForFetch);
+    setHasFetched(true);
   };
 
   // 6. Rendu du Composant
@@ -223,130 +257,161 @@ const CheckFormComponent = () => {
           </CardHeader>
 
           {/* 💡 Formulaire pour soumettre les ajustements */}
-          <form onSubmit={handleUpdateAndFetch} className="w-full">
+          <form
+            onSubmit={handleUpdateAndFetch}
+            className="w-full grid grid-cols-1 gap-4"
+          >
             <CardContent className="w-full grid gap-6">
-              {/* SECTION DÉPART */}
+              {/* 📍 SECTION DÉPART */}
               <div className="grid gap-2 p-3 border rounded-lg bg-gray-50">
                 <h3 className="font-bold text-base text-blue-700">
-                  1. Lieu de départ
+                  1. Lieu de {`l'Envoi`} (Départ)
                 </h3>
-                <div className="grid lg:grid-cols-2 gap-4">
-                  <div className="grid gap-1.5">
+                <div className="w-full grid gap-4 lg:grid-cols-2 grid-cols-1">
+                  <div className="w-full grid gap-1.5">
                     <Label>Commune</Label>
                     <SelectComponentCommune
                       data={communesKinshasa}
                       placeholder="Choisir la commune de départ"
-                      onValueChange={setCommuneDepart} // 💡 Mise à jour de l'état
-                      value={communeDepart}
                       disabled={loading}
+                      onValueChange={setCommuneDepart}
+                      value={communeDepart}
                     />
                   </div>
-                  <div className="grid gap-1.5">
+
+                  <div className="w-full grid gap-1.5">
                     <Label>Quartier</Label>
                     <SelectComponentQuartier
                       data={quartiersParCommune}
                       placeholder="Choisir le quartier de départ"
-                      onValueChange={setQuartierDepart} // 💡 Mise à jour de l'état
+                      disabled={loading || isEmptyString(communeDepart)}
+                      onValueChange={setQuartierDepart}
                       value={quartierDepart}
                       selectedCommune={communeDepart}
-                      disabled={loading || isEmptyString(communeDepart)}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* SECTION ARRIVÉE */}
+              <hr className="border-t border-gray-200" />
+
+              {/* 🏁 SECTION ARRIVÉE */}
               <div className="grid gap-2 p-3 border rounded-lg bg-gray-50">
                 <h3 className="font-bold text-base text-green-700">
-                  2. Lieu de la livraison
+                  2. Lieu de la Livraison (Arrivée)
                 </h3>
-                <div className="grid lg:grid-cols-2 gap-4">
-                  <div className="grid gap-1.5">
+                <div className="w-full grid gap-4 lg:grid-cols-2 grid-cols-1">
+                  <div className="w-full grid gap-1.5">
                     <Label>Commune</Label>
                     <SelectComponentCommune
                       data={communesKinshasa}
                       placeholder="Choisir la commune d'arrivée"
-                      onValueChange={setCommuneArrivee} // 💡 Mise à jour de l'état
-                      value={communeArrivee}
                       disabled={loading}
+                      onValueChange={setCommuneArrivee}
+                      value={communeArrivee}
                     />
                   </div>
-                  <div className="grid gap-1.5">
+
+                  <div className="w-full grid gap-1.5">
                     <Label>Quartier</Label>
                     <SelectComponentQuartier
                       data={quartiersParCommune}
                       placeholder="Choisir le quartier d'arrivée"
-                      onValueChange={setQuartierArrivee} // 💡 Mise à jour de l'état
+                      disabled={loading || isEmptyString(communeArrivee)}
+                      onValueChange={setQuartierArrivee}
                       value={quartierArrivee}
                       selectedCommune={communeArrivee}
-                      disabled={loading || isEmptyString(communeArrivee)}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* DIMENSIONS & POIDS (Simplifié) */}
-              <div className="grid gap-2 w-full">
+              <hr className="border-t border-gray-200" />
+
+              {/* 📏 SECTION DIMENSIONS ET POIDS */}
+              <div className="grid gap-2">
                 <h3 className="font-bold text-base text-gray-700">
-                  3. Dimensions et Poids
+                  3. Dimensions et Poids du Colis
                 </h3>
-                <div className="grid grid-cols-5 gap-2 w-full">
-                  <Input
-                    value={length}
-                    onChange={(e) => setLength(e.target.value)}
-                    placeholder="Long. (cm)"
-                    type="number"
-                    min={0.1}
-                    step="0.1"
-                    disabled={loading}
-                  />
-                  <Input
-                    value={width}
-                    onChange={(e) => setWidth(e.target.value)}
-                    placeholder="Larg. (cm)"
-                    type="number"
-                    min={0.1}
-                    step="0.1"
-                    disabled={loading}
-                  />
-                  <p className="p-2 border bg-gray-100 rounded-md flex items-center justify-center h-10 col-span-1">
-                    Cm
-                  </p>
+
+                {/* LONGUEUR, LARGEUR (CM) */}
+                <div className="grid grid-cols-5 w-full gap-2">
+                  {/* ... (champs Longueur, Largeur et Unité CM) ... */}
+                  <div className="w-full grid gap-1.5 col-span-2">
+                    <Label htmlFor="length">Longueur</Label>
+                    <Input
+                      value={length}
+                      onChange={(e) => setLength(e.target.value)}
+                      type="number"
+                      min={0.1}
+                      step="0.1"
+                      placeholder="Ex: 20"
+                    />
+                  </div>
+                  <div className="w-full grid gap-1.5 col-span-2">
+                    <Label htmlFor="width">Largeur</Label>
+                    <Input
+                      value={width}
+                      onChange={(e) => setWidth(e.target.value)}
+                      type="number"
+                      min={0.1}
+                      step="0.1"
+                      placeholder="Ex: 10"
+                    />
+                  </div>
+                  <div className="w-full grid gap-1.5 col-span-1">
+                    <Label htmlFor="unity" className="text-gray-500">
+                      Unité
+                    </Label>
+                    <p className="p-2 border bg-gray-100 rounded-md flex items-center justify-center h-10">
+                      Cm
+                    </p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2 mt-2 w-full">
-                  <Input
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    placeholder="Poids (kg)"
-                    type="number"
-                    min={0.1}
-                    step="0.1"
-                    disabled={loading}
-                  />
-                  <p className="p-2 border bg-gray-100 rounded-md flex items-center justify-center h-10 col-span-1">
-                    Kg
-                  </p>
+
+                {/* POIDS (KG) */}
+                <div className="grid grid-cols-4 w-full gap-2 mt-2">
+                  <div className="w-full grid gap-1.5 col-span-3">
+                    <Label htmlFor="weight">Poids</Label>
+                    <Input
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      type="number"
+                      min={0.1}
+                      step="0.1"
+                      placeholder="Ex: 0.5"
+                    />
+                  </div>
+                  <div className="w-full grid gap-1.5 col-span-1">
+                    <Label htmlFor="unity" className="text-gray-500">
+                      Unité
+                    </Label>
+                    <p className="p-2 border bg-gray-100 rounded-md flex items-center justify-center h-10">
+                      Kg
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* OPTION EXPRESS */}
+              <hr className="border-t border-gray-200" />
+
+              {/* ⚡ OPTION EXPRESS */}
               <div className="flex items-center space-x-2 py-2">
                 <Checkbox
                   id="express"
                   checked={isExpress}
-                  onCheckedChange={(checked) => setIsExpress(!!checked)}
+                  onCheckedChange={(checked) => setIsExpress(!!checked)} // S'assurer que c'est un booléen
                   disabled={loading}
                 />
                 <Label
                   htmlFor="express"
                   className="text-base font-semibold text-orange-600"
                 >
-                  Livraison Express
+                  Livraison Express (Plus rapide)
                 </Label>
               </div>
             </CardContent>
 
-            {/* BOUTON DE RECHERCHE */}
             <CardFooter className="w-full pt-0">
               <Button
                 type="submit"
@@ -356,9 +421,7 @@ const CheckFormComponent = () => {
                 {loading && (
                   <Loader className="animate-spin h-4 w-4 shrink-0" />
                 )}
-                {loading
-                  ? "Recherche en cours..."
-                  : "Rechercher avec ces paramètres"}
+                {loading ? "Recherche en cours..." : "Comparer les Tarifs"}
               </Button>
             </CardFooter>
           </form>
@@ -370,54 +433,48 @@ const CheckFormComponent = () => {
             src={TARIF_IMAGE}
             alt=""
             priority
-            width={1000}
-            height={1000}
-            className="object-cover w-full h-[600px] rounded-lg"
+            width={1200}
+            height={1500}
+            className="object-cover w-full h-[600px] rounded-lg bg-black/30"
           />
         </div>
       </div>
 
       {/* AFFICHAGE DES TARIFS */}
-      <div className="w-full p-6 ">
-        <h2 className="font-bold text-xl mb-3">Résultats des Tarifs</h2>
+      <div className="w-full py-6  ">
+        <h2 className="font-bold text-xl mb-3 px-4">Résultats des Tarifs</h2>
         {loading && tarifs.length === 0 && (
-          <p className="text-center text-muted-foreground py-6">
+          <p className="text-center text-muted-foreground py-6 px-4">
             Chargement des meilleurs tarifs...
           </p>
         )}
 
-        {!loading && tarifs.length > 0 ? (
-          <div className="grid gap-4">
-            {tarifs.map((t) => (
-              <Card key={t.id} className="p-4 border rounded-lg shadow-sm">
-                <h3 className="font-semibold text-lg text-primary">
-                  {t.companyName}
-                </h3>
-                <div className="flex justify-between items-center mt-1">
-                  <p className="text-2xl font-bold text-green-600">
-                    {t.price} FC
-                  </p>
-                  <p
-                    className={cn(
-                      "px-2 py-1 rounded-full text-sm font-medium",
-                      t.express
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-gray-100 text-gray-700"
-                    )}
-                  >
-                    {t.express ? "Express" : "Standard"}
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          !loading && (
+        <CardContent className="w-full">
+          {/* <h2 className="font-bold text-xl mb-3">
+            {tarifs.length} Résultat{tarifs.length > 1 ? "s" : ""} trouvé
+            {tarifs.length > 1 ? "s" : ""} :
+          </h2> */}
+          {loading && tarifs.length === 0 && (
             <p className="text-center text-muted-foreground py-6">
-              Aucun tarif trouvé pour ces critères.
+              Chargement des meilleurs tarifs...
             </p>
-          )
-        )}
+          )}
+
+          {!loading && tarifs.length > 0 ? (
+            <div className="grid gap-4">
+              {tarifs.map((t) => (
+                // 💡 Utilisation du nouveau composant TarifCard
+                <TarifCard key={t.tarifId} tarif={t} />
+              ))}
+            </div>
+          ) : (
+            !loading && (
+              <p className="text-center text-muted-foreground py-6">
+                Aucun tarif trouvé pour ces critères.
+              </p>
+            )
+          )}
+        </CardContent>
       </div>
     </div>
   );
