@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Card,
   CardContent,
@@ -85,6 +91,9 @@ const CheckFormComponent = ({
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false); // 💡 NOUVEAU: Pour marquer le premier fetch
 
+  // 🧭 Ref vers la section "Résultats des Tarifs"
+  const resultSectionRef = useRef<HTMLDivElement | null>(null);
+
   // 2. Fonction de Fetching : prend les paramètres explicitement
   const fetchTarifs = useCallback(
     async (currentParams: {
@@ -136,6 +145,14 @@ const CheckFormComponent = ({
         }
 
         setTarifs(result.data);
+
+        // 🧭 Après un fetch réussi → Scroll vers la section des résultats
+        setTimeout(() => {
+          resultSectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 300);
       } catch (err) {
         console.error(err);
         toast.error("Impossible de joindre le service de recherche.");
@@ -457,7 +474,7 @@ const CheckFormComponent = ({
       </div>
 
       {/* AFFICHAGE DES TARIFS */}
-      <section className="w-full py-6 px-4">
+      <section className="w-full py-6 px-4" id="tarifs" ref={resultSectionRef}>
         <h2 className="font-bold text-xl mb-4">Résultats des Tarifs</h2>
 
         {loading && (
