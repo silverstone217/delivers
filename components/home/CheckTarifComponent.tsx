@@ -474,7 +474,11 @@ const CheckFormComponent = ({
       </div>
 
       {/* AFFICHAGE DES TARIFS */}
-      <section className="w-full py-6 px-4" id="tarifs" ref={resultSectionRef}>
+      <section
+        className="w-full py-6 pb-20 px-4"
+        id="tarifs"
+        ref={resultSectionRef}
+      >
         <h2 className="font-bold text-xl mb-4">Résultats des Tarifs</h2>
 
         {loading && (

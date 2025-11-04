@@ -1,6 +1,9 @@
-import GetStartedSection from "@/components/home/GetStartedSection";
+import ContactSection from "@/components/home/ContactSection";
+import Footer from "@/components/home/Footer";
+import ForCompanies from "@/components/home/ForCompanies";
 import Header from "@/components/home/Header";
 import Hero from "@/components/home/Hero";
+import HowItWorks from "@/components/home/HowItWorks";
 
 export default function Home() {
   return (
@@ -11,12 +14,19 @@ export default function Home() {
       <main>
         <Hero />
 
-        {/* GET STARTED */}
-        <GetStartedSection />
+        {/* HOW IT WORKS */}
+        <HowItWorks />
+
+        {/* FOR COMPANIES */}
+        <ForCompanies />
+
+        {/* CONTACTS */}
+
+        <ContactSection />
       </main>
 
       {/* FOOTER */}
-      <footer></footer>
+      <Footer />
     </div>
   );
 }

@@ -2,11 +2,12 @@ import { HERO_IMAGE } from "@/lib/env";
 import Image from "next/image";
 import React from "react";
 import CheckFormPrice from "./CheckFormPrice";
+import GetStartedSection from "@/components/home/GetStartedSection";
 
 const Hero = () => {
   return (
     <main className="max-w-7xl mx-auto px-6 pb-6 pt-6">
-      <div className="grid md:grid-cols-2 grid-cols-1 gap-6 items-start">
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-8 items-start">
         {/* 1. Le formulaire à gauche (ou à droite selon l'ordre) */}
         <section className="w-full">
           <CheckFormPrice />
@@ -18,11 +19,14 @@ const Hero = () => {
             src={HERO_IMAGE}
             priority
             // Ajuster la hauteur pour qu'elle corresponde au formulaire si possible
-            className="w-full object-cover rounded-lg shadow-xl min-h-full"
+            className="w-full object-cover rounded-lg shadow-xl min-h-full animate-fadeInUp 
+            transition-all duration-300
+            "
             alt="HERO IMAGE : women with computer"
             width={1200}
             height={1000}
           />
+          <GetStartedSection />
         </section>
       </div>
     </main>

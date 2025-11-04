@@ -1,4 +1,5 @@
 import CheckFormComponent from "@/components/home/CheckTarifComponent";
+import Footer from "@/components/home/Footer";
 import Header from "@/components/home/Header";
 import React from "react";
 
@@ -15,6 +16,8 @@ async function Page({
       <Header />
       {/* CONTENT */}
       <CheckFormComponent initialSearchParams={params} />
+
+      <Footer />
     </div>
   );
 }

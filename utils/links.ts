@@ -1,5 +1,13 @@
-import { Kanban, Contact, MapPinHouse, House, Info } from "lucide-react";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
+import {
+  Kanban,
+  Contact,
+  MapPinHouse,
+  House,
+  // Info,
+  BanknoteArrowUp,
+  AppWindow,
+} from "lucide-react";
+
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
 import { MdOutlineHomeRepairService } from "react-icons/md";
 
@@ -25,7 +33,7 @@ export const EspacesLinks = [
   {
     label: "Tarifs",
     link: "/espace/tarifs",
-    icon: RiMoneyDollarBoxLine,
+    icon: BanknoteArrowUp,
   },
 
   {
@@ -44,7 +52,7 @@ export const HomeLinks = [
   {
     label: "Tarifs",
     link: "/tarifs",
-    icon: FaMoneyBillTransfer,
+    icon: RiMoneyDollarBoxLine,
   },
   {
     label: "Espace",
@@ -53,20 +61,26 @@ export const HomeLinks = [
   },
 
   {
+    label: "API et integration",
+    link: "integration",
+    icon: AppWindow,
+  },
+
+  {
     label: "Nos solutions",
-    link: "/a-propos",
+    link: "https://servi-group.vercel.app",
     icon: MdOutlineHomeRepairService,
   },
 
-  {
-    label: "A propos",
-    link: "/a-propos",
-    icon: Info,
-  },
+  // {
+  //   label: "A propos",
+  //   link: "/a-propos",
+  //   icon: Info,
+  // },
 
   {
     label: "Contacts",
-    link: "/contacts",
+    link: "#contact",
     icon: Contact,
   },
 ];
