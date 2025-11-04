@@ -1,28 +1,24 @@
-// components/TarifCard.tsx (À mettre dans votre dossier de composants)
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import {
-  DollarSign,
-  MapPin,
-  Mail,
-  Phone,
-  Globe,
-  MessageCircle,
-  //   Link as LinkIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { FaFacebook } from "react-icons/fa6";
-import { capitaliseFirstLetter } from "@/utils/function";
+"use client";
 
-// Définition de types pour la clarté
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { DollarSign, Mail, Phone, Globe, Zap } from "lucide-react";
+import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
 type Contact = {
   email: string;
   phone: string;
-  facebook: string | null;
-  whatsapp: string | null;
-  website: string | null;
+  facebook?: string | null;
+  whatsapp?: string | null;
+  website?: string | null;
   address: string;
 };
 
@@ -36,149 +32,132 @@ type Tarif = {
   contacts: Contact | null;
 };
 
-type TarifCardProps = {
-  tarif: Tarif;
-};
-
-const TarifCard = ({ tarif }: TarifCardProps) => {
+export default function TarifCard({ tarif }: { tarif: Tarif }) {
   const { companyName, companyLogo, price, express, contacts } = tarif;
 
-  // Fonction utilitaire pour le rendu des icônes de contact
-  const renderContactButton = (
-    icon: React.ReactNode,
-    href: string | null | undefined,
-    label: string
-  ) => {
-    if (!href) return null;
-
-    // Ajout du protocole si manquant pour le site web
-    let url = href;
-    if (label === "Site Web" && !url.startsWith("http")) {
-      url = `https://${url}`;
-    }
-
-    return (
-      <Button
-        asChild
-        variant="outline"
-        size="icon"
-        title={label}
-        className="shrink-0 w-8 h-8 p-1"
-      >
-        <Link href={url} target="_blank" rel="noopener noreferrer">
-          {icon}
-        </Link>
-      </Button>
-    );
-  };
-
   return (
-    <Card className="p-4 border rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <div className="flex items-center justify-between mb-3 border-b pb-3">
-        {/* 1. LOGO & NOM DE LA COMPAGNIE */}
-        <div className="flex items-center gap-3">
+    <Card
+      className="flex flex-col justify-between h-full border border-gray-200 shadow-sm hover:shadow-lg 
+      transition-all duration-300 rounded-2xl overflow-hidden bg-white"
+    >
+      {/* HEADER */}
+      <CardHeader className="flex flex-col items-center text-center pb-0">
+        <div className="w-16 h-16 mb-3 rounded-full bg-gray-50 border flex items-center justify-center">
           {companyLogo ? (
             <Image
               src={companyLogo}
-              alt={`${companyName} Logo`}
-              width={40}
-              height={40}
-              className="rounded-full object-cover border"
+              alt={companyName}
+              width={64}
+              height={64}
+              className="object-cover rounded-full"
             />
           ) : (
-            <div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-full text-gray-500 font-bold text-sm">
-              {companyName.charAt(0)}
-            </div>
+            <span className="text-lg font-bold text-gray-400">
+              {companyName[0]?.toUpperCase()}
+            </span>
           )}
-          <h3 className="font-bold text-xl text-gray-800">
-            {capitaliseFirstLetter(companyName)}
-          </h3>
         </div>
-
-        {/* 2. ÉTIQUETTE EXPRESS/STANDARD */}
+        <h3 className="font-semibold text-lg text-gray-800">{companyName}</h3>
         <span
           className={cn(
-            "px-3 py-1 text-[10px] lg:text-xs font-semibold rounded-full text-center",
+            "mt-2 px-3 py-1 text-xs font-medium rounded-full",
             express
-              ? "bg-orange-100 text-orange-700 border border-orange-300"
-              : "bg-blue-100 text-blue-700 border border-blue-300"
+              ? "bg-yellow-100 text-yellow-700 flex items-center gap-1"
+              : "bg-blue-100 text-blue-700"
           )}
         >
-          {express ? "Livraison Express" : "Livraison Standard"}
+          {express && <Zap className="w-3 h-3" />}{" "}
+          {express ? "Express" : "Standard"}
         </span>
-      </div>
+      </CardHeader>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
-        {/* 3. PRIX */}
-        <div className="flex flex-col items-start gap-1">
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-1">
-            <DollarSign className="w-4 h-4" /> Prix Estimé
-          </p>
+      {/* CONTENT */}
+      <CardContent className="text-center py-5">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-1 text-gray-500 text-sm">
+            <DollarSign className="w-4 h-4" />
+            <span>Tarif</span>
+          </div>
           <p className="text-3xl font-extrabold text-green-600">
             {price.toLocaleString()} FC
           </p>
         </div>
+      </CardContent>
 
-        {/* 4. CONTACTS (au centre) */}
-        <div className="md:border-x md:px-4 flex flex-col items-center justify-center py-2 md:py-0">
-          {/* <p className="text-sm font-medium text-gray-500 mb-2">
-            Contacter la compagnie
-          </p> */}
-          <div className="flex flex-wrap gap-2">
-            {contacts && (
-              <>
-                {renderContactButton(
-                  <Phone className="w-4 h-4" />,
-                  `tel:${contacts.phone}`,
-                  "Téléphone"
-                )}
-                {renderContactButton(
-                  <MessageCircle className="w-4 h-4 text-green-500" />,
-                  `https://wa.me/${contacts.whatsapp}`,
-                  "WhatsApp"
-                )}
-                {renderContactButton(
-                  <Mail className="w-4 h-4" />,
-                  `mailto:${contacts.email}`,
-                  "Email"
-                )}
-                {renderContactButton(
-                  <Globe className="w-4 h-4" />,
-                  contacts.website,
-                  "Site Web"
-                )}
-                {renderContactButton(
-                  <FaFacebook className="w-4 h-4 text-blue-600" />,
-                  contacts.facebook,
-                  "Facebook"
-                )}
-                {renderContactButton(
-                  <MapPin className="w-4 h-4" />,
-                  `/map?address=${contacts.address}`,
-                  "Adresse"
-                )}
-              </>
-            )}
-            {!contacts && (
-              <p className="text-xs text-gray-400">Contacts non fournis.</p>
-            )}
-          </div>
-        </div>
-
-        {/* 5. BOUTON D'ACTION (à droite) */}
-        <div className="md:text-right">
-          <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 mt-3 md:mt-0">
-            <Phone className="shrink-0" /> Contacter la compagnie
+      {/* FOOTER */}
+      <CardFooter className="flex flex-col items-center gap-3 border-t pt-3">
+        {/* Lien principal */}
+        {contacts?.phone && (
+          <Button
+            asChild
+            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
+          >
+            <Link href={`tel:${contacts.phone}`}>
+              <Phone className="w-4 h-4 mr-2" /> Contacter la compagnie
+            </Link>
           </Button>
-          {contacts?.address && (
-            <p className="text-xs text-gray-500 mt-2">
-              Adresse: {contacts.address.substring(0, 30)}...
-            </p>
+        )}
+
+        {/* Liens secondaires */}
+        <div className="flex justify-center gap-3">
+          {contacts?.whatsapp && (
+            <Link
+              href={`https://wa.me/${contacts.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              title="WhatsApp"
+              className="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition"
+            >
+              <FaWhatsapp className="w-4 h-4" />
+            </Link>
+          )}
+
+          {contacts?.email && (
+            <Link
+              href={`mailto:${contacts.email}`}
+              title="Email"
+              className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 transition"
+            >
+              <Mail className="w-4 h-4" />
+            </Link>
+          )}
+
+          {contacts?.website && (
+            <Link
+              href={
+                contacts.website.startsWith("http")
+                  ? contacts.website
+                  : `https://${contacts.website}`
+              }
+              target="_blank"
+              title="Site web"
+              className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 transition"
+            >
+              <Globe className="w-4 h-4" />
+            </Link>
+          )}
+
+          {contacts?.facebook && (
+            <Link
+              href={contacts.facebook}
+              target="_blank"
+              title="Facebook"
+              className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 transition"
+            >
+              <FaFacebook className="w-4 h-4" />
+            </Link>
           )}
         </div>
-      </div>
+
+        {/* Adresse */}
+        {contacts?.address && (
+          <p className="text-xs text-gray-500 text-center mt-1">
+            📍{" "}
+            {contacts.address.length > 35
+              ? `${contacts.address.slice(0, 35)}...`
+              : contacts.address}
+          </p>
+        )}
+      </CardFooter>
     </Card>
   );
-};
-
-export default TarifCard;
+}

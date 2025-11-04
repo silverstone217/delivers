@@ -133,16 +133,31 @@ const EditContactsForm = ({ contacts, companyId }: Props) => {
             <Label htmlFor="phone">
               Téléphone <strong className="text-destructive">*</strong>
             </Label>
+
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-muted-foreground" />
-              <Input
-                id="phone"
-                type="text"
-                placeholder="+243 970 123 456"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                disabled={loading}
-              />
+
+              <div className="relative w-full flex items-center gap-2">
+                {/* 📞 Indicatif +243 (fixe) */}
+                <span className="p-2 px-3 border bg-secondary/30 rounded-md text-sm font-medium text-gray-700 whitespace-nowrap">
+                  +243
+                </span>
+
+                {/* Champ pour les 9 chiffres */}
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]{9}"
+                  placeholder="830 123 456"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={loading}
+                  className="flex-1"
+                  minLength={9}
+                  maxLength={9}
+                />
+              </div>
             </div>
           </div>
 
@@ -184,14 +199,26 @@ const EditContactsForm = ({ contacts, companyId }: Props) => {
             <Label htmlFor="whatsapp">WhatsApp</Label>
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-muted-foreground" />
-              <Input
-                id="whatsapp"
-                type="text"
-                placeholder="+243 970 123 456"
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                disabled={loading}
-              />
+
+              <div className="relative w-full flex items-center gap-2">
+                {/* 📞 Indicatif +243 (fixe) */}
+                <span className="p-2 px-3 border bg-secondary/30 rounded-md text-sm font-medium text-gray-700 whitespace-nowrap">
+                  +243
+                </span>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  placeholder="830 123 456"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  disabled={loading}
+                  className="flex-1"
+                  inputMode="numeric"
+                  pattern="[0-9]{9}"
+                  minLength={9}
+                  maxLength={9}
+                />
+              </div>
             </div>
           </div>
 
@@ -209,6 +236,11 @@ const EditContactsForm = ({ contacts, companyId }: Props) => {
               />
             </div>
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            <strong>NB:</strong> Entrez les 9 chiffres sans le 0 ni l’indicatif
+            (+243)
+          </p>
         </CardContent>
 
         <CardFooter className="flex justify-end pt-4">

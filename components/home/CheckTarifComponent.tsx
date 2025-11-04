@@ -457,41 +457,35 @@ const CheckFormComponent = ({
       </div>
 
       {/* AFFICHAGE DES TARIFS */}
-      <div className="w-full py-6  ">
-        <h2 className="font-bold text-xl mb-3 px-4">Résultats des Tarifs</h2>
-        {loading && tarifs.length === 0 && (
-          <p className="text-center text-muted-foreground py-6 px-4">
+      <section className="w-full py-6 px-4">
+        <h2 className="font-bold text-xl mb-4">Résultats des Tarifs</h2>
+
+        {loading && (
+          <p className="text-center text-muted-foreground py-6">
             Chargement des meilleurs tarifs...
           </p>
         )}
 
-        <CardContent className="w-full">
-          {/* <h2 className="font-bold text-xl mb-3">
-            {tarifs.length} Résultat{tarifs.length > 1 ? "s" : ""} trouvé
-            {tarifs.length > 1 ? "s" : ""} :
-          </h2> */}
-          {loading && tarifs.length === 0 && (
+        {!loading && tarifs.length > 0 ? (
+          <div
+            className="grid gap-5
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            xl:grid-cols-4"
+          >
+            {tarifs.map((t) => (
+              <TarifCard key={t.tarifId} tarif={t} />
+            ))}
+          </div>
+        ) : (
+          !loading && (
             <p className="text-center text-muted-foreground py-6">
-              Chargement des meilleurs tarifs...
+              Aucun tarif trouvé pour ces critères.
             </p>
-          )}
-
-          {!loading && tarifs.length > 0 ? (
-            <div className="grid gap-4">
-              {tarifs.map((t) => (
-                // 💡 Utilisation du nouveau composant TarifCard
-                <TarifCard key={t.tarifId} tarif={t} />
-              ))}
-            </div>
-          ) : (
-            !loading && (
-              <p className="text-center text-muted-foreground py-6">
-                Aucun tarif trouvé pour ces critères.
-              </p>
-            )
-          )}
-        </CardContent>
-      </div>
+          )
+        )}
+      </section>
     </div>
   );
 };
