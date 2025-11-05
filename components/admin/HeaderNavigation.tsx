@@ -16,17 +16,13 @@ import LogoutBtn from "../auth/LogoutBtn";
 import UserAvatar from "../UserAvatar";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
-import { EspacesLinks } from "@/utils/links";
+import { AdminsLinks } from "@/utils/links";
 import { SITE_NAME } from "@/lib/env";
-import { LucideProps, Shield } from "lucide-react";
+import { LucideProps } from "lucide-react";
 import { IconType } from "react-icons/lib";
-import { ADMIN_ROLES } from "@/utils/admin";
+import { usePathname } from "next/navigation";
 
-type Props = {
-  company: DeliveryCompany;
-};
-
-const HeaderNavigation = ({ company }: Props) => {
+const HeaderNavigation = () => {
   return (
     <header
       className="md:hidden fixed
@@ -43,7 +39,7 @@ const HeaderNavigation = ({ company }: Props) => {
           </h2>
         </Link>
 
-        <SheetNav company={company} dataLinks={EspacesLinks} />
+        <SheetNav dataLinks={AdminsLinks} />
       </div>
     </header>
   );
@@ -68,6 +64,8 @@ export type SheetNavType = {
 
 export const SheetNav = ({ dataLinks }: SheetNavType) => {
   const user = useCurrentUser();
+
+  const pathname = usePathname();
 
   // if (!user) return null;
 
@@ -95,15 +93,25 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
           pt-4 px-2"
         >
           {dataLinks.map((link, idx) => {
+            const isFocus =
+              link.link === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.link);
+
             return (
               <SheetClose key={idx} asChild>
                 <Link
                   href={link.link}
-                  className="w-full flex items-center gap-4
+                  className={`w-full flex items-center gap-4
                    px-4 py-2 hover:bg-secondary text-sm 
                    font-medium
-                   transition-all duration-300 ease-in-out
-                "
+                   transition-all duration-300 ease-in-out rounded
+                   ${
+                     isFocus
+                       ? "bg-black/80 text-white hover:text-gray-600"
+                       : "bg-transparent"
+                   }
+                `}
                 >
                   <link.icon className="shrink-0" size={25} />
                   <span>{link.label}</span>
@@ -111,24 +119,6 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
               </SheetClose>
             );
           })}
-
-          {/* ADMIN LINK */}
-
-          {user && ADMIN_ROLES.includes(user.role) && (
-            <SheetClose asChild>
-              <Link
-                href={"/admin/services"}
-                className="w-full flex items-center gap-4
-                   px-4 py-2 hover:bg-secondary text-sm 
-                   font-medium
-                   transition-all duration-300 ease-in-out
-                "
-              >
-                <Shield className="shrink-0" size={25} />
-                <span>Admin.</span>
-              </Link>
-            </SheetClose>
-          )}
         </nav>
 
         {/* separator */}

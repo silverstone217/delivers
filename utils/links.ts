@@ -3,9 +3,9 @@ import {
   Contact,
   MapPinHouse,
   House,
-  // Info,
   BanknoteArrowUp,
   AppWindow,
+  Users,
 } from "lucide-react";
 
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
@@ -61,7 +61,7 @@ export const HomeLinks = [
   },
 
   {
-    label: "API et integration",
+    label: "API",
     link: "integration",
     icon: AppWindow,
   },
@@ -72,15 +72,60 @@ export const HomeLinks = [
     icon: MdOutlineHomeRepairService,
   },
 
-  // {
-  //   label: "A propos",
-  //   link: "/a-propos",
-  //   icon: Info,
-  // },
-
   {
     label: "Contacts",
     link: "#contact",
     icon: Contact,
+  },
+];
+
+export const AdminsLinks = [
+  {
+    label: "Accueil",
+    link: "/",
+    icon: House,
+  },
+
+  {
+    label: "Services",
+    link: "/admin/services",
+    icon: Kanban,
+  },
+
+  {
+    label: "Membres",
+    link: "/admin/users",
+    icon: Users,
+  },
+
+  {
+    label: "Compagnies",
+    link: "/admin/compagnies",
+    icon: BanknoteArrowUp,
+  },
+
+  {
+    label: "Contacts",
+    link: "/admin/contacts",
+    icon: Contact,
+  },
+];
+
+export const AdminsLinkServices = [
+  {
+    label: "Service et info",
+    link: "/admin/services/:id",
+  },
+  {
+    label: "Zones",
+    link: "/admin/services/:id/zones",
+  },
+  {
+    label: "Tarifs",
+    link: "/admin/services/:id/tarifs",
+  },
+  {
+    label: "Contacts",
+    link: "/admin/services/:id/contacts",
   },
 ];

@@ -12,6 +12,7 @@ import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { capitaliseFirstLetter } from "@/utils/function";
 
 type Contact = {
   email: string;
@@ -57,7 +58,9 @@ export default function TarifCard({ tarif }: { tarif: Tarif }) {
             </span>
           )}
         </div>
-        <h3 className="font-semibold text-lg text-gray-800">{companyName}</h3>
+        <h3 className="font-semibold text-lg text-gray-800">
+          {capitaliseFirstLetter(companyName)}
+        </h3>
         <span
           className={cn(
             "mt-2 px-3 py-1 text-xs font-medium rounded-full",

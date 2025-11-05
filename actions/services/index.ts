@@ -10,6 +10,7 @@ import {
 } from "@/schema/companies";
 import { NO_IMAGE_URL } from "@/lib/env";
 import { PERMIT_ROLES } from "@/utils/service";
+import { ADMIN_ROLES } from "@/utils/admin";
 
 // --------------------
 // GET Delivery Company
@@ -221,6 +222,94 @@ export const updateService = async (data: UpdateServiceType) => {
   }
 };
 
-//
-//
-//
+// --------------------
+// GET ADMINS  COMPANIES
+// --------------------
+export const getAdminsCompanies = async () => {
+  try {
+    const user = await getUser();
+
+    if (!user || !ADMIN_ROLES.includes(user.role)) {
+      return {
+        data: [],
+        message: "NON-AUTHORISE",
+        error: true,
+      };
+    }
+
+    const companies = await prisma.deliveryCompany.findMany({
+      where: {
+        ownerId: user.id,
+      },
+      include: {
+        contact: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const formatedData = companies.map((com) => {
+      return {
+        companyId: com.id,
+        companyName: com.name,
+        companyLogo: com.logo,
+        companyDescription: com.description,
+        createdAt: com.createdAt,
+        contacts: com.contact,
+      };
+    });
+
+    return {
+      data: formatedData ?? [],
+      message: "Success",
+      error: false,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      data: [],
+      message: "Impossible d'acceder aux donnees",
+      error: true,
+    };
+  }
+};
+
+// --------------------
+// GET ADMINS  COMPANy BY ID
+// --------------------
+
+export const getAdminsCompanyById = async (id: string) => {
+  try {
+    const user = await getUser();
+
+    if (!user || !ADMIN_ROLES.includes(user.role)) {
+      return {
+        data: null,
+        message: "NON-AUTHORISE",
+        error: true,
+      };
+    }
+
+    const company = await prisma.deliveryCompany.findUnique({
+      where: {
+        ownerId: user.id,
+        id,
+      },
+      include: { contact: true, tarifs: true, zones: true },
+    });
+
+    return {
+      data: company ?? null,
+      message: "Success",
+      error: false,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      data: null,
+      message: "Impossible d'acceder aux donnees",
+      error: true,
+    };
+  }
+};
