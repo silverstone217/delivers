@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { roboto } from "@/lib/fonts";
+import { ADMIN_ROLES } from "@/utils/admin";
+import { redirect } from "next/navigation";
 import React from "react";
 
 interface UsersLayoutProps {
@@ -46,6 +48,10 @@ async function UsersLayout({ children }: UsersLayoutProps) {
         </Card>
       </div>
     );
+  }
+
+  if (ADMIN_ROLES.includes(user.role)) {
+    redirect("/admin/services");
   }
 
   return <div>{children}</div>;

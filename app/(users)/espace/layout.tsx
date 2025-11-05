@@ -3,6 +3,7 @@ import { getDeliveryCompany } from "@/actions/services";
 import AsideBarNavigation from "@/components/services/AsideBarNavigation";
 import HeaderNavigation from "@/components/services/HeaderNavigation";
 import NoServiceFound from "@/components/services/NoServiceFound";
+import { ADMIN_ROLES } from "@/utils/admin";
 import React, { ReactNode } from "react";
 
 type EspaceLayoutProps = {
@@ -13,6 +14,10 @@ async function EspaceLayout({ children }: EspaceLayoutProps) {
   const user = await getUser();
 
   if (!user) return null;
+
+  if (ADMIN_ROLES.includes(user.role)) {
+    return null;
+  }
 
   const companies = await getDeliveryCompany();
 
