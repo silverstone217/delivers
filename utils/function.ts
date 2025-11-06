@@ -1,3 +1,5 @@
+import { createId } from "@paralleldrive/cuid2";
+
 // IS EMPTY STRING
 export function isEmptyString(str: string) {
   return str.replace(/ /g, "") === "";
@@ -33,4 +35,9 @@ export function isGreaterThan(a: string | number, b: string | number): boolean {
   }
 
   return numA > numB;
+}
+
+// CUID
+export function generateApiKey() {
+  return `cmp_live_${createId()}`;
 }

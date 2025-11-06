@@ -1,21 +1,19 @@
-import Footer from "@/components/home/Footer";
-import Header from "@/components/home/Header";
+// app/integration/page.tsx
 import { roboto } from "@/lib/fonts";
-import React from "react";
+import { redirect } from "next/navigation";
 
-function page() {
+export default function IntegrationPage() {
+  return redirect("/integration/credentials");
+
   return (
     <div>
-      <Header />
-      <h3 className={`${roboto.className} text-3xl p-4 md:p-6 font-bold`}>
-        <strong>API et Integration</strong>
-      </h3>
-
-      <main className="min-h-[90vh]"></main>
-
-      <Footer />
+      <h2 className={`${roboto.className} text-2xl font-bold mb-4`}>
+        Bienvenue dans la section API
+      </h2>
+      <p className="text-muted-foreground">
+        Ici vous pouvez récupérer vos identifiants API, consulter la
+        documentation et voir des exemples de requêtes.
+      </p>
     </div>
   );
 }
-
-export default page;

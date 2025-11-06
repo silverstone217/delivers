@@ -62,7 +62,7 @@ export const HomeLinks = [
 
   {
     label: "API",
-    link: "integration",
+    link: "integration/credentials",
     icon: AppWindow,
   },
 
