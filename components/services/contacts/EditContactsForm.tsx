@@ -72,10 +72,6 @@ const EditContactsForm = ({ contacts, companyId }: Props) => {
     }
   };
 
-  // ⚙️ useMemo — bouton désactivé si :
-  // - loading
-  // - champs obligatoires vides
-  // - aucun changement
   const isButtonDisabled = useMemo((): boolean => {
     if (loading) return true;
     if (isEmptyString(email) || isEmptyString(phone) || isEmptyString(address))
@@ -171,7 +167,7 @@ const EditContactsForm = ({ contacts, companyId }: Props) => {
               <Input
                 id="address"
                 type="text"
-                placeholder="Avenue du Commerce, Kinshasa"
+                placeholder="17, isiro, gombe, kinshasa"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 disabled={loading}

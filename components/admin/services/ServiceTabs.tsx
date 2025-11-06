@@ -7,7 +7,7 @@ const AdminsLinkServices = [
   { label: "Service & Info", link: (id: string) => `/admin/services/${id}` },
   { label: "Zones", link: (id: string) => `/admin/services/${id}/zones` },
   { label: "Tarifs", link: (id: string) => `/admin/services/${id}/tarifs` },
-  { label: "Contacts", link: (id: string) => `/admin/services/${id}/contacts` },
+  // { label: "Contacts", link: (id: string) => `/admin/services/${id}/contacts` },
 ];
 
 interface ServiceTabsProps {
@@ -21,8 +21,9 @@ export default function ServiceTabs({ serviceId }: ServiceTabsProps) {
     <nav className="w-full border-b pb-2 overflow-x-auto no-scrollbar">
       <ul className="flex gap-2 min-w-max">
         {/* FIRST PAGE */}
-        {AdminsLinkServices.filter((i) => i.label.includes("Service & Info"))
-        .map((item, idx) => {
+        {AdminsLinkServices.filter((i) =>
+          i.label.includes("Service & Info")
+        ).map((item, idx) => {
           const href = item.link(serviceId);
           const isActive = pathname === href;
 
@@ -52,8 +53,9 @@ export default function ServiceTabs({ serviceId }: ServiceTabsProps) {
         })}
 
         {/* OTHER PAGES */}
-        {AdminsLinkServices.filter((i) => !i.label.includes("Service & Info"))
-        .map((item, idx) => {
+        {AdminsLinkServices.filter(
+          (i) => !i.label.includes("Service & Info")
+        ).map((item, idx) => {
           const href = item.link(serviceId);
           const isActive = pathname === href || pathname.startsWith(href + "/");
 

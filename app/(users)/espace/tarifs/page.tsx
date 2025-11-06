@@ -5,11 +5,17 @@ import { getZones } from "@/actions/zones";
 import { TarifCards } from "@/components/services/tarifs/TarifCard";
 import AddTarifsBtn from "@/components/tarifs/AddTarifsBtn";
 import { roboto } from "@/lib/fonts";
+import { ADMIN_ROLES } from "@/utils/admin";
+import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
 
 async function page() {
   const user = await getUser();
   if (!user) return null;
+
+  if (ADMIN_ROLES.includes(user.role)) {
+    redirect("/admin/services");
+  }
 
   //   GET COMPANIE
   const companies = await getDeliveryCompany();

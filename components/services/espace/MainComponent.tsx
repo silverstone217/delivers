@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  deleteCompanyById,
   updateLogo,
   updateService,
   UpdateServiceType,
@@ -15,6 +16,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +36,7 @@ import {
   isEmptyString,
 } from "@/utils/function";
 import { DeliveryCompany } from "@prisma/client";
-import { Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Edit2, Loader2, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useRef, useState } from "react";
@@ -245,14 +255,26 @@ const MainComponent = ({ company }: Props) => {
         </CardContent>
 
         {/* FOOTER */}
-        <CardFooter className="flex justify-end gap-3 pt-4">
+        <CardFooter className="flex justify-end gap-3 pt-4 flex-wrap">
+          {/* CANCEL */}
           <Button
             variant="outline"
             disabled={loading}
             onClick={() => router.back()}
           >
-            Retour
+            <>
+              <ArrowLeft className="w-4 h-4" /> Retour
+            </>
           </Button>
+
+          {/* DELETE */}
+          <DeleteCompanyComponant
+            company={company}
+            loading={loading}
+            setLoading={setLoading}
+          />
+
+          {/* MODIFY */}
           <Button onClick={handleModify} disabled={isButtonDisabled}>
             {loading ? (
               <>
@@ -260,7 +282,9 @@ const MainComponent = ({ company }: Props) => {
                 En cours...
               </>
             ) : (
-              "Modifier"
+              <>
+                <Edit2 className="w-4 h-4" /> Modifier
+              </>
             )}
           </Button>
         </CardFooter>
@@ -270,3 +294,74 @@ const MainComponent = ({ company }: Props) => {
 };
 
 export default MainComponent;
+
+export const DeleteCompanyComponant = ({
+  company,
+  loading,
+  setLoading,
+}: {
+  company: DeliveryCompany;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    setLoading(true);
+    setLoadingDelete(true);
+    try {
+      const result = await deleteCompanyById(company.id);
+
+      if (result.error) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      router.push("/admin/services");
+
+      console.log("DELETE COMPANY:", company.id);
+    } finally {
+      setLoading(false);
+      setLoadingDelete(false);
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild disabled={loading || loadingDelete}>
+        <Button variant="destructive" className=" flex items-center gap-2">
+          <Trash2 className="w-4 h-4" />
+          Supprimer
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Supprimer le service ?</DialogTitle>
+          <DialogDescription>
+            Cette action est définitive. Êtes-vous sûr de vouloir supprimer{" "}
+            <span className="font-semibold">{company.name}</span> ?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="flex justify-end gap-2">
+          <DialogTrigger asChild>
+            <Button variant="outline">Annuler</Button>
+          </DialogTrigger>
+
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={loading || loadingDelete}
+          >
+            {loadingDelete ? "Suppression..." : "Oui, supprimer"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

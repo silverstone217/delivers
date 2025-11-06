@@ -11,6 +11,7 @@ import {
 import { NO_IMAGE_URL } from "@/lib/env";
 import { PERMIT_ROLES } from "@/utils/service";
 import { ADMIN_ROLES } from "@/utils/admin";
+import { del } from "@vercel/blob";
 
 // --------------------
 // GET Delivery Company
@@ -215,6 +216,66 @@ export const updateService = async (data: UpdateServiceType) => {
     };
   } catch (error) {
     console.log(error);
+    return {
+      error: true,
+      message: "Oops ! Une erreur est survenue, veuillez réessayer.",
+    };
+  }
+};
+
+// --------------------
+// DELETE  COMPANY
+// --------------------
+
+export const deleteCompanyById = async (companyId: string) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non authentifié, veuillez vous connecter pour continuer.",
+      };
+    }
+
+    // Vérification ownership + existence (plus propre)
+    const company = await prisma.deliveryCompany.findFirst({
+      where: {
+        id: companyId,
+        ownerId: user.id,
+      },
+      select: {
+        id: true,
+        logo: true,
+      },
+    });
+
+    if (!company) {
+      return {
+        error: true,
+        message: "Ce service n'existe pas ou vous n'y avez pas accès.",
+      };
+    }
+
+    // Suppression en base
+    await prisma.deliveryCompany.delete({
+      where: { id: company.id },
+    });
+
+    // Suppression du logo (si existant et pas un placeholder)
+    if (company.logo && company.logo !== NO_IMAGE_URL) {
+      try {
+        await del(company.logo);
+      } catch (e) {
+        console.log("⚠️ Échec suppression blob (pas grave)", e);
+      }
+    }
+
+    return {
+      error: false,
+      message: "Service supprimé avec succès.",
+    };
+  } catch (error) {
+    console.log("❌ deleteCompanyById error:", error);
     return {
       error: true,
       message: "Oops ! Une erreur est survenue, veuillez réessayer.",
