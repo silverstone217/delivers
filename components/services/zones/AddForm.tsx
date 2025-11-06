@@ -55,10 +55,12 @@ const AddForm = ({ companyId }: AddZoneProps) => {
       }
 
       toast.success(result.message);
+      setSelection([]);
+      setName("");
 
       router.refresh();
 
-      setTimeout(() => router.push("/espace/zones"), 1500);
+      setTimeout(() => router.back(), 500);
     } catch (error) {
       console.log(error);
       toast.error("Impossible d'ajouter une zone");
@@ -86,6 +88,7 @@ const AddForm = ({ companyId }: AddZoneProps) => {
           onChange={(e) => setName(e.target.value)}
           minLength={1}
           maxLength={60}
+          disabled={loading}
         />
       </div>
 
@@ -99,7 +102,12 @@ const AddForm = ({ companyId }: AddZoneProps) => {
 
       {/* ACTIONS */}
       <div className="flex items-center flex-wrap justify-end gap-4 mt-4">
-        <Button type="button" variant={"outline"} disabled={loading}>
+        <Button
+          type="button"
+          variant={"outline"}
+          disabled={loading}
+          onClick={() => router.back()}
+        >
           Annuler
         </Button>
         <Button type="submit" disabled={isButtonDisable}>

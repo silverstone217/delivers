@@ -182,6 +182,7 @@ const MainComponent = ({ company }: Props) => {
                   src={preview}
                   alt="Logo preview"
                   fill
+                  sizes="(max-width: 768px) 64px, 96px"
                   className="object-cover rounded-full transition-transform group-hover:scale-105"
                 />
               ) : (
