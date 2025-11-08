@@ -20,7 +20,7 @@ import { AdminsLinks } from "@/utils/links";
 import { SITE_NAME } from "@/lib/env";
 import { LucideProps } from "lucide-react";
 import { IconType } from "react-icons/lib";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const HeaderNavigation = () => {
   return (
@@ -69,6 +69,8 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
 
   // if (!user) return null;
 
+  const router = useRouter();
+
   return (
     <Sheet>
       <SheetTrigger>
@@ -79,7 +81,7 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
       </SheetTrigger>
       <SheetContent className="h-dvh overflow-x-hidden overflow-y-auto pt-6">
         <SheetHeader hidden>
-          <SheetTitle>DELIVERS</SheetTitle>
+          <SheetTitle onClick={() => router.push("/")}>DELIVERS</SheetTitle>
           <SheetDescription>
             Votre espace de service de livraison
           </SheetDescription>
