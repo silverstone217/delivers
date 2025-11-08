@@ -3,21 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { getPricingSchema } from "@/schema/getPricing";
 import { verifyApiKey } from "@/lib/verifyApiKey";
 
-// Helper pour récupérer les IDs de Zone depuis quartier + commune
 const findZoneIdsByLocation = async (
   communeName: string,
   quartierName: string
-): Promise<string[]> => {
+) => {
   const communes = await prisma.commune.findMany({
     where: {
       name: communeName,
-      quartiers: {
-        some: { name: quartierName },
-      },
+      quartiers: { some: { name: quartierName } },
     },
-    select: {
-      zoneId: true,
-    },
+    select: { zoneId: true },
   });
   return communes.map((c) => c.zoneId);
 };
@@ -26,12 +21,12 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Vérification de l'API Key
     const { error: apiError } = await verifyApiKey(req);
     if (apiError)
       return NextResponse.json({ error: apiError }, { status: 401 });
 
     const parsed = getPricingSchema.safeParse(body);
+
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid format", details: parsed.error.issues },
@@ -39,14 +34,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const { origin, destination, parcel } = parsed.data;
+    const { origin, destination, parcel, express } = parsed.data;
+    const { weight, length, width } = parcel;
 
-    // Si parcel est undefined ou une dimension manquante, on met 0
-    const weight = parcel?.weight ?? 0;
-    const length = parcel?.length ?? 0;
-    const width = parcel?.width ?? 0;
-
-    // 1️⃣ Récupérer les Zone IDs
     const senderZoneIds = await findZoneIdsByLocation(
       origin.commune,
       origin.quartier
@@ -63,11 +53,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2️⃣ Récupérer les tarifs correspondants
     const tarifs = await prisma.tarif.findMany({
       where: {
         senderId: { in: senderZoneIds },
         receiverId: { in: receiverZoneIds },
+        ...(express !== undefined && { express }), // filtre express ou standard
         minWeight: { lte: weight },
         maxWeight: { gte: weight },
         minLength: { lte: length },
@@ -78,7 +68,7 @@ export async function POST(req: Request) {
       include: {
         company: { include: { contact: true } },
       },
-      orderBy: [{ price: "asc" }, { express: "desc" }],
+      orderBy: [{ price: "asc" }],
     });
 
     if (!tarifs.length) {
@@ -88,7 +78,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3️⃣ Formater le résultat
     const result = tarifs.map((t) => ({
       tarifId: t.id,
       name: t.name,

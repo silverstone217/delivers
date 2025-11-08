@@ -23,15 +23,14 @@ export default function DocumentationPage() {
         <CardHeader>
           <CardTitle>Introduction</CardTitle>
           <CardDescription>
-            Cette documentation explique comment intégrer notre API pour obtenir
-            les tarifs de livraison selon l&apos;origine, la destination et les
-            dimensions du colis.
+            Cette API permet d’obtenir les tarifs de livraison entre deux zones,
+            en fonction de l’origine, la destination, les dimensions du colis et
+            le mode d’expédition (Express ou Standard).
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            L’API utilise des clés d’API individuelles pour chaque utilisateur.
-            Vous pouvez récupérer votre clé dans votre tableau de bord.
+            Toutes les requêtes nécessitent une clé API.
           </p>
         </CardContent>
       </Card>
@@ -41,34 +40,31 @@ export default function DocumentationPage() {
         <CardHeader>
           <CardTitle>Endpoints</CardTitle>
         </CardHeader>
+
         <CardContent>
           <Tabs defaultValue="get-pricing">
             <TabsList className="w-full border-b mb-4">
               <TabsTrigger value="get-pricing">
-                GET /api/get-pricing
+                POST /api/get-pricing
               </TabsTrigger>
               <TabsTrigger value="auth">Authentification</TabsTrigger>
             </TabsList>
 
             <TabsContent value="get-pricing">
               <h3 className="text-lg font-semibold mb-2">Obtenir les tarifs</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Envoie l&apos;adresse d&apos;origine, de destination et les
-                dimensions du colis pour obtenir la liste des compagnies et
-                tarifs disponibles.
-              </p>
 
-              <Badge variant="secondary" className="mb-2">
+              <Badge variant="secondary" className="mb-3">
                 Méthode POST
               </Badge>
+
               <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
                 {`POST /api/get-pricing
 Content-Type: application/json
-Authorization: Bearer YOUR_API_KEY`}
+x-api-key: YOUR_API_KEY`}
               </pre>
 
               <h4 className="font-medium mt-4">
-                Format des données d&apos;entrée
+                Données d’entrée (toutes obligatoires)
               </h4>
               <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
                 {`{
@@ -80,101 +76,72 @@ Authorization: Bearer YOUR_API_KEY`}
     "commune": "Gombe",
     "quartier": "Commerce"
   },
-  "parcel": {
-    "weight": 2.5,
-    "width": 20,
-    "length": 35
-  }
+  "weight": 2.5,
+  "length": 35,
+  "width": 20,
+  "express": true
 }`}
               </pre>
 
               <h4 className="font-medium mt-4">Exemple de réponse</h4>
-              <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
+              <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto text-xs">
                 {`[
   {
-    "tarifId": "cuid123",
-    "name": "Standard",
-    "price": 15.5,
-    "express": false,
-    "company": {
-      "id": "cuid456",
-      "name": "FastDelivery",
-      "logo": "https://logo.url/logo.png"
-    },
-    "senderZone": "Kasa-Vubu",
-    "receiverZone": "Gombe",
-    "estimatedDelivery": "Standard"
-  },
-  {
-    "tarifId": "cuid789",
-    "name": "Express",
-    "price": 25.0,
+    "tarifId": "cmhnd4ala006ltkgwbvbpvsrj",
+    "name": "A_C",
+    "price": 15000,
     "express": true,
     "company": {
-      "id": "cuid456",
-      "name": "FastDelivery",
-      "logo": "https://logo.url/logo.png"
+      "id": "cmhm4vvxv0001tk68i7iayunb",
+      "name": "shadunk express",
+      "logo": "https://.../logo.png",
+      "contact": {
+        "email": "shadunk@express.com",
+        "phone": "835647896",
+        "address": "17, isiro, gombe, kinshasa",
+        "facebook": null,
+        "whatsapp": null,
+        "website": null
+      }
     },
-    "senderZone": "Kasa-Vubu",
-    "receiverZone": "Gombe",
+    "senderZoneId": "cmhnc0yhp0003tkgwyr012sot",
+    "receiverZoneId": "cmhnca46q003vtkgwgb4eir69",
     "estimatedDelivery": "Express"
   }
 ]`}
               </pre>
 
-              <h4 className="font-medium mt-4">Types d&apos;erreurs</h4>
-              <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
-                {`{
-  "error": "Invalid API Key"
-}
+              <h4 className="font-medium mt-4">Notes</h4>
+              <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
+                <li>
+                  <b>weight(Poids)</b>, <b>length(Longueur)</b> et{" "}
+                  <b>width(Largeur)</b> doivent être fournis.
+                </li>
+                <li>
+                  <b>express</b> = `true` {"=>"} recherche uniquement express.
+                </li>
+                <li>
+                  Les champs obligatoires dans `company.contact` sont:{" "}
+                  <b>email</b>, <b>phone</b>, <b>address</b>.
+                </li>
+              </ul>
 
-{
-  "error": "Zone not supported"
-}
-
-{
-  "error": "Server error, please retry"
-}`}
+              <h4 className="font-medium mt-4">Types d’erreurs possibles</h4>
+              <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto text-sm">
+                {`{ "error": "Invalid API Key" }
+{ "error": "Zone not supported" }
+{ "error": "No pricing available" }
+{ "error": "Server error, please retry" }`}
               </pre>
             </TabsContent>
 
             <TabsContent value="auth">
               <h3 className="text-lg font-semibold mb-2">Authentification</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Toutes les requêtes doivent inclure votre clé API dans
-                l&apos;entête Authorization.
-              </p>
               <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
-                {`Authorization: Bearer YOUR_API_KEY`}
+                {`x-api-key: YOUR_API_KEY`}
               </pre>
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
-
-      {/* CONSEILS */}
-      <Card className="shadow-sm border border-muted/30 rounded-2xl">
-        <CardHeader>
-          <CardTitle>Conseils et bonnes pratiques</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
-            <li>
-              Vérifiez toujours que la commune et le quartier existent dans
-              notre base de données.
-            </li>
-            <li>
-              Si une dimension du colis n’est pas fournie, elle sera considérée
-              comme 0.
-            </li>
-            <li>
-              Les tarifs express sont prioritaires si la même compagnie propose
-              plusieurs options.
-            </li>
-            <li>
-              Gardez votre clé API secrète et ne la partagez pas publiquement.
-            </li>
-          </ul>
         </CardContent>
       </Card>
     </div>

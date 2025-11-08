@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { communesKinshasa, quartiersParCommune } from "@/utils/zones";
 import { toast } from "sonner";
+import { isEmptyString } from "@/utils/function";
 
 type CommuneKey = keyof typeof quartiersParCommune;
 
@@ -25,6 +26,8 @@ export default function APITestForm() {
   const [weight, setWeight] = useState<number | "">("");
   const [width, setWidth] = useState<number | "">("");
   const [length, setLength] = useState<number | "">("");
+  const [express, setExpress] = useState<boolean>(false);
+
   const [apiKey, setApiKey] = useState<string>("");
 
   const [result, setResult] = useState<any>(null);
@@ -54,9 +57,12 @@ export default function APITestForm() {
         body: JSON.stringify({
           origin: { commune: originCommune, quartier: originQuartier },
           destination: { commune: destCommune, quartier: destQuartier },
-          weight,
-          width,
-          length,
+          parcel: {
+            weight,
+            width,
+            length,
+          },
+          express,
         }),
       });
 
@@ -66,7 +72,7 @@ export default function APITestForm() {
         setResult(data);
         toast.success("Résultats récupérés avec succès");
       } else {
-        toast.error(data?.message || "Erreur lors de la récupération");
+        toast.error(data.error || "Erreur lors de la récupération");
       }
     } catch (error) {
       console.log(error);
@@ -75,6 +81,21 @@ export default function APITestForm() {
       setLoading(false);
     }
   };
+
+  const isBtnDisabled = useMemo(() => {
+    if (loading) return true;
+    if (
+      isEmptyString(apiKey) ||
+      isEmptyString(originQuartier) ||
+      isEmptyString(destQuartier) ||
+      isEmptyString(width.toString()) ||
+      isEmptyString(weight.toString()) ||
+      isEmptyString(length.toString())
+    )
+      return true;
+
+    return false;
+  }, [apiKey, destQuartier, length, loading, originQuartier, weight, width]);
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -200,10 +221,23 @@ export default function APITestForm() {
         />
       </div>
 
+      <div className="flex items-center gap-2">
+        <input
+          id="express"
+          type="checkbox"
+          checked={express}
+          onChange={(e) => setExpress(e.target.checked)}
+          className="h-4 w-4"
+        />
+        <label htmlFor="express" className="text-sm font-medium">
+          Livraison Express
+        </label>
+      </div>
+
       <Button
         onClick={handleSubmit}
         className="w-full md:w-auto"
-        disabled={loading}
+        disabled={isBtnDisabled}
       >
         {loading ? "Chargement..." : "Rechercher"}
       </Button>
