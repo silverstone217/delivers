@@ -7,3 +7,5 @@ export const NO_IMAGE_URL = process.env.NO_IMAGE_URL!;
 export const SITE_NAME = process.env.SITE_NAME!;
 export const HERO_IMAGE = process.env.HERO_IMAGE!;
 export const TARIF_IMAGE = process.env.TARIF_IMAGE!;
+export const GOOGLE_ADSENSE_API_KEY = process.env.GOOGLE_ADSENSE_API_KEY!;
+export const GOOGLE_ADSLOT = process.env.GOOGLE_ADSLOT!;

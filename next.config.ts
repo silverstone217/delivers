@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
     SITE_NAME: process.env.SITE_NAME,
     HERO_IMAGE: process.env.HERO_IMAGE,
     TARIF_IMAGE: process.env.TARIF_IMAGE,
+    GOOGLE_ADSENSE_API_KEY: process.env.GOOGLE_ADSENSE_API_KEY,
+    GOOGLE_ADSLOT: process.env.GOOGLE_ADSLOT,
   },
 
   // IMAGES

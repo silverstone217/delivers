@@ -1,8 +1,7 @@
-import { HERO_IMAGE } from "@/lib/env";
-import Image from "next/image";
 import React from "react";
 import CheckFormPrice from "./CheckFormPrice";
 import GetStartedSection from "@/components/home/GetStartedSection";
+import AdsBanner from "../GoogelBannerAds";
 
 const Hero = () => {
   return (
@@ -14,18 +13,9 @@ const Hero = () => {
         </section>
 
         {/* 2. L'image à droite */}
-        <section className="w-full">
-          <Image
-            src={HERO_IMAGE}
-            priority
-            // Ajuster la hauteur pour qu'elle corresponde au formulaire si possible
-            className="w-full object-cover rounded-lg shadow-xl min-h-full animate-fadeInUp 
-            transition-all duration-300
-            "
-            alt="HERO IMAGE : women with computer"
-            width={1200}
-            height={1000}
-          />
+        <section className="w-full relative">
+          <AdsBanner />
+
           <GetStartedSection />
         </section>
       </div>
