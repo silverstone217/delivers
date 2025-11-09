@@ -27,7 +27,7 @@ export default function AdBanner() {
   }, []);
 
   return (
-    <div ref={insRef} className="w-full">
+    <div ref={insRef} className="w-full bg-secondary/50 rounded-lg">
       {!adError ? (
         <ins
           className="adsbygoogle"
