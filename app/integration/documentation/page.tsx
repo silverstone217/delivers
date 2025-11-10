@@ -44,10 +44,12 @@ export default function DocumentationPage() {
         <CardContent>
           <Tabs defaultValue="get-pricing">
             <TabsList className="w-full border-b mb-4">
-              <TabsTrigger value="get-pricing">
-                POST https://delivers.vercel.app/api/get-pricing
+              <TabsTrigger value="get-pricing" className="line-clamp-1">
+                POST /api/get-pricing
               </TabsTrigger>
-              <TabsTrigger value="auth">Authentification</TabsTrigger>
+              <TabsTrigger value="auth" className="line-clamp-1">
+                Authentification
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="get-pricing">
@@ -58,7 +60,7 @@ export default function DocumentationPage() {
               </Badge>
 
               <pre className="bg-muted/20 p-4 rounded-lg overflow-x-auto">
-                {`POST /api/get-pricing
+                {`POST https://delivers.vercel.app/api/get-pricing
 Content-Type: application/json
 x-api-key: YOUR_API_KEY`}
               </pre>
