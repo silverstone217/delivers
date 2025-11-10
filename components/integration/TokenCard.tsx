@@ -9,6 +9,7 @@ export default function TokenCard() {
   const [loading, setLoading] = useState(false);
 
   // 💡 Pour l'instant on simule la récupération du token
+
   useEffect(() => {
     const fetchToken = async () => {
       setLoading(true);
@@ -40,6 +41,12 @@ export default function TokenCard() {
         method: "POST",
       });
       const data = await res.json();
+
+      if (data.error) {
+        toast.error(data.message);
+        return;
+      }
+
       setToken(data.token);
       toast.success("Token régénéré avec succès !");
     } catch (error) {
