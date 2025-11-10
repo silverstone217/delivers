@@ -45,7 +45,7 @@ export default function DocumentationPage() {
           <Tabs defaultValue="get-pricing">
             <TabsList className="w-full border-b mb-4">
               <TabsTrigger value="get-pricing">
-                POST /api/get-pricing
+                POST https://delivers.vercel.app/api/get-pricing
               </TabsTrigger>
               <TabsTrigger value="auth">Authentification</TabsTrigger>
             </TabsList>
