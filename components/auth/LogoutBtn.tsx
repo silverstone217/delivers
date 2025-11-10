@@ -14,7 +14,7 @@ const LogoutBtn = () => {
   const handleSignout = async () => {
     setLoading(true);
     try {
-      await signOut({ redirect: false });
+      await signOut({ callbackUrl: "/" });
       router.refresh();
     } catch (error) {
       toast.error("Une erreur survenue, veuillez reessayer plus tard!");

@@ -1,7 +1,9 @@
 import React from "react";
 import CheckFormPrice from "./CheckFormPrice";
 import GetStartedSection from "@/components/home/GetStartedSection";
-import AdsBanner from "../GoogelBannerAds";
+// import AdsBanner from "../GoogelBannerAds";
+import Image from "next/image";
+import { HERO_IMAGE } from "@/lib/env";
 
 const Hero = () => {
   return (
@@ -14,7 +16,14 @@ const Hero = () => {
 
         {/* 2. L'image à droite */}
         <section className="w-full relative">
-          <AdsBanner />
+          <Image
+            src={HERO_IMAGE}
+            priority
+            className="w-full object-cover rounded-lg shadow-xl min-h-full animate-fadeInUp transition-all duration-300"
+            alt="HERO IMAGE : fallback"
+            width={1200}
+            height={1000}
+          />
 
           <GetStartedSection />
         </section>

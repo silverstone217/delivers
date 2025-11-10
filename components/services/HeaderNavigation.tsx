@@ -21,6 +21,7 @@ import { SITE_NAME } from "@/lib/env";
 import { LucideProps, Shield } from "lucide-react";
 import { IconType } from "react-icons/lib";
 import { ADMIN_ROLES } from "@/utils/admin";
+import AvatarLogin from "../home/AvatarLogin";
 
 type Props = {
   company: DeliveryCompany;
@@ -150,7 +151,7 @@ export const SheetNav = ({ dataLinks }: SheetNavType) => {
           )}
 
           {/* DECONNEXION BTN */}
-          {user && <LogoutBtn />}
+          {user ? <LogoutBtn /> : <AvatarLogin />}
         </div>
       </SheetContent>
     </Sheet>

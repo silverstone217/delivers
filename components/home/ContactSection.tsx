@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
+import { sendContactEmail } from "@/actions/sendMail";
+import { isEmptyString } from "@/utils/function";
 
 const ContactSection = () => {
   const [name, setName] = useState("");
@@ -15,7 +17,7 @@ const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !email || !message) {
+    if (isEmptyString(name) || isEmptyString(email) || isEmptyString(message)) {
       toast.error("Merci de remplir tous les champs.");
       return;
     }
@@ -23,8 +25,16 @@ const ContactSection = () => {
     setLoading(true);
 
     try {
-      // Ici tu peux ajouter ton appel à l'API ou service email
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await sendContactEmail({
+        name,
+        email,
+        message,
+      });
+
+      if (res.error) {
+        toast.error(res.message);
+        return;
+      }
 
       toast.success("Message envoyé avec succès !");
       setName("");
@@ -37,6 +47,10 @@ const ContactSection = () => {
       setLoading(false);
     }
   };
+
+  const disabledButtonSub = useMemo(() => {
+    if (loading) return true;
+  }, [loading]);
 
   return (
     <section
@@ -93,7 +107,7 @@ const ContactSection = () => {
 
         {/* Bouton */}
         <div className="md:col-span-2">
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={disabledButtonSub}>
             {loading ? "Envoi en cours..." : "Envoyer le message"}
           </Button>
         </div>

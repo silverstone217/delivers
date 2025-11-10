@@ -9,3 +9,4 @@ export const HERO_IMAGE = process.env.HERO_IMAGE!;
 export const TARIF_IMAGE = process.env.TARIF_IMAGE!;
 export const GOOGLE_ADSENSE_API_KEY = process.env.GOOGLE_ADSENSE_API_KEY!;
 export const GOOGLE_ADSLOT = process.env.GOOGLE_ADSLOT!;
+export const RESEND_API_KEY = process.env.RESEND_API_KEY!;
