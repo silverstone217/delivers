@@ -9,11 +9,14 @@ const findZoneIdsByLocation = async (
 ) => {
   const communes = await prisma.commune.findMany({
     where: {
-      name: communeName,
-      quartiers: { some: { name: quartierName } },
+      name: { equals: communeName.trim(), mode: "insensitive" },
+      quartiers: {
+        some: { name: { equals: quartierName.trim(), mode: "insensitive" } },
+      },
     },
     select: { zoneId: true },
   });
+
   return communes.map((c) => c.zoneId);
 };
 
