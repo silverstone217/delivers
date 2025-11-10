@@ -76,9 +76,11 @@ x-api-key: YOUR_API_KEY`}
     "commune": "Gombe",
     "quartier": "Commerce"
   },
-  "weight": 2.5,
-  "length": 35,
-  "width": 20,
+ "parcel" :{
+    "weight": 2.5,
+    "length": 35,
+    "width": 20,
+  },
   "express": true
 }`}
               </pre>

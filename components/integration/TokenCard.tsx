@@ -48,10 +48,10 @@ export default function TokenCard() {
       }
 
       setToken(data.token);
-      toast.success("Token régénéré avec succès !");
+      toast.success("Cette Clé régénérée avec succès !");
     } catch (error) {
       console.error(error);
-      toast.error("Impossible de régénérer le token.");
+      toast.error("Impossible de régénérer la clé.");
     } finally {
       setLoading(false);
     }
@@ -59,13 +59,15 @@ export default function TokenCard() {
 
   return (
     <div className="bg-muted/10 border border-muted/30 p-6 rounded-xl flex flex-col gap-4">
-      <label className="text-sm font-medium">Votre token unique :</label>
+      <label className="text-sm font-medium">
+        Votre API KEY(Clé unique) unique :
+      </label>
       <div className="flex gap-2 items-center">
         <input
           className="flex-1 p-2 rounded border border-muted/40 bg-white text-sm font-mono"
           type="text"
           readOnly
-          value={token ?? "Aucun token généré"}
+          value={token ?? "Aucune clé générée"}
         />
         <Button onClick={handleCopy} disabled={!token || loading} size="sm">
           Copier
@@ -77,10 +79,10 @@ export default function TokenCard() {
         size="sm"
         disabled={loading}
       >
-        Régénérer le token
+        Régénérer la clé
       </Button>
       <p className="text-xs text-muted-foreground">
-        Ce token sera utilisé pour authentifier vos requêtes vers l’API.
+        Cette clé sera utilisée pour authentifier vos requêtes vers l’API.
       </p>
     </div>
   );
