@@ -92,6 +92,7 @@ export const quartiersParCommune = {
     "Camp Kokolo",
     "Kasa-Vubu",
     "Adoula",
+    "Lingwala",
   ],
   Lingwala: [
     "30 Juin",
