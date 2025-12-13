@@ -35,7 +35,7 @@ import {
   formatJoinedDate,
   isEmptyString,
 } from "@/utils/function";
-import { DeliveryCompany } from "@prisma/client";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import { ArrowLeft, Edit2, Loader2, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

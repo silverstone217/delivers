@@ -19,7 +19,7 @@ import {
   Globe,
   MessageSquare,
 } from "lucide-react";
-import { Contact } from "@prisma/client";
+import { Contact } from "@/lib/generated/prisma/client";
 import { roboto } from "@/lib/fonts";
 import { isEmptyString } from "@/utils/function";
 import { FaFacebook } from "react-icons/fa6";

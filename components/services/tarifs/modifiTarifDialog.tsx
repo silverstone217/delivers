@@ -20,8 +20,7 @@ import { toast } from "sonner";
 import { Pencil, Loader2, Ruler, Scale, DollarSign } from "lucide-react";
 import { FaShippingFast } from "react-icons/fa";
 import { updateTarif } from "@/actions/tarifs";
-import { Tarif } from "@prisma/client";
-
+import { Tarif } from "@/lib/generated/prisma/client";
 type EditTarifButtonProps = {
   tarif: Tarif;
 };

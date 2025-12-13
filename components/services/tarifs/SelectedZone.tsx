@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Zone } from "@prisma/client";
+import { Zone } from "@/lib/generated/prisma/client";
 
 interface SelectedZoneProps {
   zones: Zone[];
