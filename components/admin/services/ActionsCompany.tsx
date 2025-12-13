@@ -20,11 +20,11 @@ import {
 
 import { Trash2 } from "lucide-react";
 import { roboto } from "@/lib/fonts";
-import { DeliveryCompany } from "@prisma/client";
 import { useState } from "react";
 import { deleteCompanyById } from "@/actions/services";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 
 type Props = {
   company: DeliveryCompany;

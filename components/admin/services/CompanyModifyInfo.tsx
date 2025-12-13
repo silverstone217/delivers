@@ -18,12 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { NO_IMAGE_URL } from "@/lib/env";
 import { roboto } from "@/lib/fonts";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import {
   capitaliseFirstLetter,
   formatJoinedDate,
   isEmptyString,
 } from "@/utils/function";
-import { DeliveryCompany } from "@prisma/client";
 import { Label } from "@radix-ui/react-label";
 import { Upload, Loader2 } from "lucide-react";
 import Image from "next/image";

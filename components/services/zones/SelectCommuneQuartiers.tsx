@@ -38,6 +38,7 @@ export default function SelectCommuneQuartiers({
   // Sync initial selection
   useEffect(() => {
     if (initialSelection && initialSelection.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelected(initialSelection);
       onChange(initialSelection);
     }

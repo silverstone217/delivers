@@ -1,5 +1,4 @@
 "use client";
-import { DeliveryCompany } from "@prisma/client";
 import React from "react";
 import {
   Sheet,
@@ -21,6 +20,7 @@ import { SITE_NAME } from "@/lib/env";
 import { LucideProps } from "lucide-react";
 import { IconType } from "react-icons/lib";
 import { usePathname, useRouter } from "next/navigation";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 
 const HeaderNavigation = () => {
   return (

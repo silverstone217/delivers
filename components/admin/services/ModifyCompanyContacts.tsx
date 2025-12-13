@@ -11,8 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { roboto } from "@/lib/fonts";
+import { Contact, DeliveryCompany } from "@/lib/generated/prisma/client";
 import { isEmptyString } from "@/utils/function";
-import { Contact, DeliveryCompany } from "@prisma/client";
 import {
   Globe,
   Loader2,

@@ -6,9 +6,9 @@ import { Separator } from "../ui/separator";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import UserAvatar from "../UserAvatar";
 import LogoutBtn from "../auth/LogoutBtn";
-import { DeliveryCompany } from "@prisma/client";
 import { capitaliseFirstLetter } from "@/utils/function";
 import { SITE_NAME } from "@/lib/env";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 
 type Props = {
   company: DeliveryCompany;

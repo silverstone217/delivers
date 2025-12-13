@@ -16,7 +16,7 @@ import {
 import SelectedZone from "./SelectedZone";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Zone } from "@prisma/client";
+import { Zone } from "@/lib/generated/prisma/client";
 import { isGreaterThan } from "@/utils/function";
 import { Switch } from "@/components/ui/switch";
 import { FaShippingFast } from "react-icons/fa";

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Phone, Mail, Globe, MapPin, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Contact } from "@prisma/client";
 import { capitaliseFirstLetter } from "@/utils/function";
+import { Contact } from "@/lib/generated/prisma/client";
 
 type Props = {
   companyId: string;

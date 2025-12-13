@@ -19,7 +19,7 @@ const AsideBarNavigation = () => {
 
   return (
     <aside
-      className="w-[200px] fixed left-0 top-0 bottom-0
+      className="w-50 fixed left-0 top-0 bottom-0
   z-40 bg-secondary/20 shadow md:block hidden
   transition-all duration-300 ease-in-out 
   "

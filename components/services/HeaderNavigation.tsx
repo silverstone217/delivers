@@ -1,5 +1,4 @@
 "use client";
-import { DeliveryCompany } from "@prisma/client";
 import React from "react";
 import {
   Sheet,
@@ -22,6 +21,7 @@ import { LucideProps, Shield } from "lucide-react";
 import { IconType } from "react-icons/lib";
 import { ADMIN_ROLES } from "@/utils/admin";
 import AvatarLogin from "../home/AvatarLogin";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 
 type Props = {
   company: DeliveryCompany;

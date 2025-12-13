@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, MapPin } from "lucide-react";
 import { roboto } from "@/lib/fonts";
-import { Commune, Quartier, Zone } from "@prisma/client";
+import { Commune, Quartier, Zone } from "@/lib/generated/prisma/client";
 import {
   Dialog,
   DialogContent,
