@@ -1,0 +1,12 @@
+export const AUTH_SECRET = process.env.AUTH_SECRET!;
+export const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL!;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
+export const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN!;
+export const NO_IMAGE_URL = process.env.NO_IMAGE_URL!;
+export const SITE_NAME = process.env.SITE_NAME!;
+export const HERO_IMAGE = process.env.HERO_IMAGE!;
+export const TARIF_IMAGE = process.env.TARIF_IMAGE!;
+export const GOOGLE_ADSENSE_API_KEY = process.env.GOOGLE_ADSENSE_API_KEY!;
+export const GOOGLE_ADSLOT = process.env.GOOGLE_ADSLOT!;
+export const RESEND_API_KEY = process.env.RESEND_API_KEY!;
