@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tarif } from "@prisma/client";
+import { Tarif } from "@/lib/generated/prisma/client";
 import { Ruler, Box, Banknote, Trash2, Loader, Scale, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
