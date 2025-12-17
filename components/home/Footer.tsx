@@ -6,6 +6,8 @@ import { roboto } from "@/lib/fonts";
 import { HomeLinks } from "@/utils/links";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import { SITE_NAME } from "@/lib/env";
+import logo from "@/public/images/delivers-logo.png";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -13,14 +15,24 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Branding */}
         <div className="flex flex-col space-y-3">
-          <h2
-            className={cn(
-              "text-2xl font-bold text-white uppercase",
-              roboto.className
-            )}
-          >
-            {SITE_NAME}
-          </h2>
+          <div className="flex items-center gap-1.5">
+            <Image
+              alt="Logo delivers"
+              src={logo}
+              priority
+              width={40}
+              height={40}
+              className=""
+            />
+            <h2
+              className={cn(
+                "text-2xl font-bold text-white uppercase",
+                roboto.className
+              )}
+            >
+              {SITE_NAME}
+            </h2>
+          </div>
           <p className="text-gray-400 text-sm">
             Comparez facilement les tarifs de livraison au Congo. Trouvez le
             meilleur service pour vos colis.
