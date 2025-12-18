@@ -7,7 +7,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 // import { GOOGLE_ADSENSE_API_KEY } from "@/lib/env";
 
 export const metadata: Metadata = {
-  title: "Comparateur de prix de livraison par zones au Congo | Delivers",
+  title: "Delivers",
   description:
     "Delivers est un comparateur de prix de livraison par zones au Congo. Comparez les tarifs des services de livraison selon la zone, la distance et le transporteur.",
   keywords: [
@@ -20,11 +20,14 @@ export const metadata: Metadata = {
     "livraison",
     "business",
     "service",
+    "otekis",
+    "otekis delivery",
+    "servi group",
   ],
-  authors: [{ name: "Delivers" }],
+  authors: [{ name: "SERVI Group", url: "https://servi-group.vercel.app" }],
   robots: "index, follow",
   openGraph: {
-    title: "Comparateur de prix de livraison au Congo | Delivers",
+    title: "Delivers",
     description:
       "Comparez facilement les prix de livraison par zones au Congo avec Delivers.",
     url: "https://delivers.vercel.app/",
