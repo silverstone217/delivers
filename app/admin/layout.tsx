@@ -82,7 +82,7 @@ async function AdminLayout({ children }: AdminLayoutProps) {
       <AsideBarNavigation />
 
       <main
-        className=" md:pl-[214px]
+        className=" md:pl-53.5
         p-4 md:pt-4 pt-16"
       >
         {children}

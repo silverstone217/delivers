@@ -55,7 +55,7 @@ const ActionsCompany = ({ company }: Props) => {
   };
 
   return (
-    <Card className="w-full p-4 lg:p-6 shadow-sm border border-muted/30 rounded-2xl">
+    <Card className="w-full p-4 lg:p-6 shadow-sm border border-muted/30 rounded-2xl md:col-span-2 lg:col-span-1">
       {/* HEADER */}
       <CardHeader className="text-center space-y-1">
         <CardTitle
