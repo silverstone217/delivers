@@ -19,7 +19,7 @@ const Header = () => {
     "
     >
       {/* TOP HEADER */}
-      <div className="w-full flex items-center justify-between">
+      <div className="w-full flex items-center justify-between mx-auto max-w-7xl">
         <Link href={"/"}>
           <h2 className="max-w-56 line-clamp-1 font-bold text-lg text-black">
             {capitaliseFirstLetter(SITE_NAME)}
